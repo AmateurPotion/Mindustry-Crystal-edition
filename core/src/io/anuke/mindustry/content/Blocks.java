@@ -24,6 +24,8 @@ import io.anuke.mindustry.world.blocks.power.*;
 import io.anuke.mindustry.world.blocks.production.*;
 import io.anuke.mindustry.world.blocks.sandbox.*;
 import io.anuke.mindustry.world.blocks.storage.*;
+import io.anuke.mindustry.world.blocks.storage.addon.AddonBase;
+import io.anuke.mindustry.world.blocks.storage.addon.CrafterAddon;
 import io.anuke.mindustry.world.blocks.units.*;
 import io.anuke.mindustry.world.consumers.*;
 import io.anuke.mindustry.world.meta.*;
@@ -81,7 +83,10 @@ public class Blocks implements ContentList{
     fortressFactory, chaosArrayFactory, eradicatorFactory, repairPoint,
 
     //upgrades
-    dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad;
+    dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad,
+
+    //addon
+    testaddon, crafteraddon;
 
     //Crystal edition list
     //crystalLab,crystalDrill,biotechnologyFacilities,polarbattery,energyInjector,nuclearLauncher,siliconcompounder,deflectorConveyor,crystalWall
@@ -1355,12 +1360,32 @@ public class Blocks implements ContentList{
                 Draw.reset();
             };
         }};
+        //endregion
+        //region addon
+        testaddon = new AddonBase("addon"){{
+            requirements(Category.addon, ItemStack.with(Items.scrap, 500, Items.silicon, 100));
+            size = 1;
+            itemCapacity = 1000;
+        }};
+
+        crafteraddon = new CrafterAddon("test"){{
+            requirements(Category.addon, ItemStack.with(Items.copper, 60, Items.graphite, 30, Items.lead, 30));
+            craftEffect = Fx.smeltsmoke;
+            outputItem = new ItemStack(Items.metaglass, 1);
+            craftTime = 30f;
+            size = 1;
+            hasPower = hasItems = true;
+
+            consumes.items(new ItemStack(Items.lead, 1), new ItemStack(Items.sand, 1));
+            consumes.power(0.60f);
+        }};
+
 
         //endregion
         //region storage
 
         coreShard = new Coreshard("core-shard"){{
-            requirements(Category.effect, ItemStack.with(Items.scrap, 1000));
+            requirements(Category.core, ItemStack.with(Items.scrap, 1000));
             alwaysUnlocked = true;
             health = 300;
             itemCapacity = 500;
@@ -1381,7 +1406,7 @@ public class Blocks implements ContentList{
         }};
 
         coreFoundation = new CoreBlock("core-foundation"){{
-            requirements(Category.effect, ItemStack.with(Items.copper, 3000, Items.lead, 3000, Items.titanium, 1500, Items.silicon, 1000,Items.metaglass, 1000,Items.graphite, 1000, Items.thorium, 1000));
+            requirements(Category.core, ItemStack.with(Items.copper, 3000, Items.lead, 3000, Items.titanium, 1500, Items.silicon, 1000,Items.metaglass, 1000,Items.graphite, 1000, Items.thorium, 1000));
 
             health = 1200;
             itemCapacity = 2500;
@@ -1389,7 +1414,7 @@ public class Blocks implements ContentList{
         }};
 
         coreNucleus = new CoreBlock("core-nucleus"){{
-            requirements(Category.effect, ItemStack.with(Items.titanium, 4000, Items.silicon, 2000,Items.metaglass, 2000, Items.phasefabric, 500,Items.surgealloy,1000, Items.polarstone, 50, Items.crystal, 10));
+            requirements(Category.core, ItemStack.with(Items.titanium, 4000, Items.silicon, 2000,Items.metaglass, 2000, Items.phasefabric, 500,Items.surgealloy,1000, Items.polarstone, 50, Items.crystal, 10));
 
             health = 10000;
             itemCapacity = 50000;
