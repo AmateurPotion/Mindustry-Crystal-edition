@@ -20,7 +20,11 @@ public enum Category{
     /** Things that upgrade the player such as mech pads. */
     upgrade,
     /** Things for storage or passive effects. */
-    effect;
+    effect,
+    /** addon category **/
+    addon,
+    /** core category **/
+    core;
 
     public static final Category[] all = values();
 }

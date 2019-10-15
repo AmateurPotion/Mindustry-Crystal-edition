@@ -6,7 +6,6 @@ import io.anuke.mindustry.world.Tile;
 
 
 public class Coreshard extends CoreBlock {
-    protected Mech mech = Mechs.starter;
 
     public Coreshard(String name){
         super(name);
