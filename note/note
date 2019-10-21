@@ -1,0 +1,1 @@
+gradlew.bat desktop:dist -Pbuildversion=96 -Pcommit=potion -PversionType="crystal edition" --stacktrace --warning-mode all
