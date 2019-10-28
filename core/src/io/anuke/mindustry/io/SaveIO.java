@@ -5,8 +5,7 @@ import io.anuke.arc.files.FileHandle;
 import io.anuke.arc.util.io.CounterInputStream;
 import io.anuke.arc.util.io.FastDeflaterOutputStream;
 import io.anuke.mindustry.Vars;
-import io.anuke.mindustry.io.versions.Save1;
-import io.anuke.mindustry.io.versions.Save2;
+import io.anuke.mindustry.io.versions.*;
 import io.anuke.mindustry.world.WorldContext;
 
 import java.io.*;
@@ -19,7 +18,7 @@ public class SaveIO{
     /** Format header. This is the string 'MSAV' in ASCII. */
     public static final byte[] header = {77, 83, 65, 86};
     public static final IntMap<SaveVersion> versions = new IntMap<>();
-    public static final Array<SaveVersion> versionArray = Array.with(new Save1(), new Save2());
+    public static final Array<SaveVersion> versionArray = Array.with(new Save1(), new Save2(), new Save3());
 
     static{
         for(SaveVersion version : versionArray){
@@ -35,37 +34,23 @@ public class SaveIO{
         return versions.get(version);
     }
 
-    public static void saveToSlot(int slot){
-        FileHandle file = fileFor(slot);
+    public static void save(FileHandle file){
         boolean exists = file.exists();
         if(exists) file.moveTo(backupFileFor(file));
         try{
-            write(fileFor(slot));
+            write(file);
         }catch(Exception e){
             if(exists) backupFileFor(file).moveTo(file);
             throw new RuntimeException(e);
         }
     }
 
-    public static void loadFromSlot(int slot) throws SaveException{
-        load(fileFor(slot));
+    public static DataInputStream getStream(FileHandle file){
+        return new DataInputStream(new InflaterInputStream(file.read(bufferSize)));
     }
 
-    public static DataInputStream getSlotStream(int slot){
-        return new DataInputStream(new InflaterInputStream(fileFor(slot).read(bufferSize)));
-    }
-
-    public static DataInputStream getBackupSlotStream(int slot){
-        return new DataInputStream(new InflaterInputStream(backupFileFor(fileFor(slot)).read(bufferSize)));
-    }
-
-    public static boolean isSaveValid(int slot){
-        try{
-            getMeta(slot);
-            return true;
-        }catch(Exception e){
-            return false;
-        }
+    public static DataInputStream getBackupStream(FileHandle file){
+        return new DataInputStream(new InflaterInputStream(backupFileFor(file).read(bufferSize)));
     }
 
     public static boolean isSaveValid(FileHandle file){
@@ -86,11 +71,11 @@ public class SaveIO{
         }
     }
 
-    public static SaveMeta getMeta(int slot){
+    public static SaveMeta getMeta(FileHandle file){
         try{
-            return getMeta(getSlotStream(slot));
+            return getMeta(getStream(file));
         }catch(Exception e){
-            return getMeta(getBackupSlotStream(slot));
+            return getMeta(getBackupStream(file));
         }
     }
 
@@ -168,6 +153,7 @@ public class SaveIO{
         }catch(Exception e){
             throw new SaveException(e);
         }finally{
+            world.setGenerating(false);
             content.setTemporaryMapper(null);
         }
     }

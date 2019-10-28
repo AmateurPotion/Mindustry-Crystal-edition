@@ -1,6 +1,5 @@
 package io.anuke.mindustry.world.blocks.power;
 
-import io.anuke.annotations.Annotations.*;
 import io.anuke.arc.*;
 import io.anuke.arc.collection.*;
 import io.anuke.arc.function.*;
@@ -10,7 +9,6 @@ import io.anuke.arc.math.*;
 import io.anuke.arc.math.geom.*;
 import io.anuke.arc.util.*;
 import io.anuke.mindustry.entities.type.*;
-import io.anuke.mindustry.gen.*;
 import io.anuke.mindustry.graphics.*;
 import io.anuke.mindustry.ui.*;
 import io.anuke.mindustry.world.*;
@@ -36,46 +34,42 @@ public class PowerNode extends PowerBlock{
         outputsPower = false;
     }
 
-    @Remote(targets = Loc.both, called = Loc.server, forward = true)
-    public static void linkPowerNodes(Player player, Tile tile, Tile other){
-        if(tile.entity == null || other == null || tile.entity.power == null || !((PowerNode)tile.block()).linkValid(tile, other)
-        || tile.entity.power.links.size >= ((PowerNode)tile.block()).maxNodes) return;
+    @Override
+    public void configured(Tile tile, Player player, int value){
+        TileEntity entity = tile.entity;
+        Tile other = world.tile(value);
+        boolean contains = entity.power.links.contains(value), valid = other != null && other.entity != null && other.entity.power != null;
 
-        TileEntity entity = tile.entity();
+        if(contains){
+            //unlink
+            entity.power.links.removeValue(value);
+            if(valid) other.entity.power.links.removeValue(tile.pos());
 
-        if(!entity.power.links.contains(other.pos())){
-            entity.power.links.add(other.pos());
-        }
+            PowerGraph newgraph = new PowerGraph();
 
-        if(other.getTeamID() == tile.getTeamID()){
+            //reflow from this point, covering all tiles on this side
+            newgraph.reflow(tile);
 
-            if(!other.entity.power.links.contains(tile.pos())){
-                other.entity.power.links.add(tile.pos());
+            if(valid && other.entity.power.graph != newgraph){
+                //create new graph for other end
+                PowerGraph og = new PowerGraph();
+                //reflow from other end
+                og.reflow(other);
             }
-        }
+        }else if(linkValid(tile, other) && valid && entity.power.links.size < maxNodes){
 
-        entity.power.graph.add(other.entity.power.graph);
-    }
+            if(!entity.power.links.contains(other.pos())){
+                entity.power.links.add(other.pos());
+            }
 
-    @Remote(targets = Loc.both, called = Loc.server, forward = true)
-    public static void unlinkPowerNodes(Player player, Tile tile, Tile other){
-        if(tile.entity.power == null || other.entity == null || other.entity.power == null) return;
+            if(other.getTeamID() == tile.getTeamID()){
 
-        TileEntity entity = tile.entity();
+                if(!other.entity.power.links.contains(tile.pos())){
+                    other.entity.power.links.add(tile.pos());
+                }
+            }
 
-        entity.power.links.removeValue(other.pos());
-        other.entity.power.links.removeValue(tile.pos());
-
-        PowerGraph newgraph = new PowerGraph();
-
-        //reflow from this point, covering all tiles on this side
-        newgraph.reflow(tile);
-
-        if(other.entity.power.graph != newgraph){
-            //create new graph for other end
-            PowerGraph og = new PowerGraph();
-            //reflow from other end
-            og.reflow(other);
+            entity.power.graph.add(other.entity.power.graph);
         }
     }
 
@@ -114,12 +108,18 @@ public class PowerNode extends PowerBlock{
         Geometry.circle(tile.x, tile.y, (int)(laserRange + 1), (x, y) -> {
             Tile other = world.ltile(x, y);
             if(valid.test(other)){
-                tempTiles.add(other);
+                if(!insulated(tile, other)) {
+                    tempTiles.add(other);
+                }
             }
         });
 
         tempTiles.sort(Structs.comparingFloat(t -> t.dst2(tile)));
-        tempTiles.each(valid, other -> Call.linkPowerNodes(null, tile, other));
+        tempTiles.each(valid, other -> {
+            if(!tile.entity.power.links.contains(other.pos())){
+                tile.configureAny(other.pos());
+            }
+        });
 
         super.placed(tile);
     }
@@ -166,13 +166,21 @@ public class PowerNode extends PowerBlock{
         Tile result = other;
 
         if(linkValid(tile, other)){
-            if(linked(tile, other)){
-                Call.unlinkPowerNodes(null, tile, result);
-            }else if(entity.power.links.size < maxNodes){
-                Call.linkPowerNodes(null, tile, result);
+            tile.configure(other.pos());
+            return false;
+        }
+
+        if(tile == other){
+            if (other.entity.power.links.size == 0){
+                getPotentialLinks(tile, link -> tile.configure(link.pos()));
+            } else {
+                while (entity.power.links.size > 0){
+                    tile.configure(entity.power.links.get(0));
+                }
             }
             return false;
         }
+
         return true;
     }
 
@@ -227,22 +235,31 @@ public class PowerNode extends PowerBlock{
         Draw.color(Pal.placing);
         Drawf.circles(x * tilesize + offset(), y * tilesize + offset(), laserRange * tilesize);
 
-        getPotentialLinks(tile, other -> Drawf.square(other.drawx(), other.drawy(), other.block().size * tilesize / 2f + 2f, Pal.place));
+        getPotentialLinks(tile, other -> {
+            Drawf.square(other.drawx(), other.drawy(), other.block().size * tilesize / 2f + 2f, Pal.place);
+
+            insulators(tile.x, tile.y, other.x, other.y, cause -> {
+                Drawf.square(cause.drawx(), cause.drawy(), cause.block().size * tilesize / 2f + 2f, Pal.plastanium);
+            });
+        });
 
         Draw.reset();
     }
 
     @Override
     public void drawLayer(Tile tile){
-        if(!Core.settings.getBool("lasers")) return;
+        if(Core.settings.getInt("lasersopacity") == 0) return;
 
         TileEntity entity = tile.entity();
 
         for(int i = 0; i < entity.power.links.size; i++){
             Tile link = world.tile(entity.power.links.get(i));
-            if(linkValid(tile, link) && (link.pos() < tile.pos() || !(link.block() instanceof PowerNode) || !Core.camera.bounds(Tmp.r1).contains(link.drawx(), link.drawy()))){
-                drawLaser(tile, link);
-            }
+
+            if(!linkValid(tile, link)) continue;
+
+            if(link.block() instanceof PowerNode && !(link.pos() < tile.pos())) continue;
+
+            drawLaser(tile, link);
         }
 
         Draw.reset();
@@ -277,6 +294,11 @@ public class PowerNode extends PowerBlock{
     }
 
     protected void drawLaser(Tile tile, Tile target){
+        int opacityPercentage = Core.settings.getInt("lasersopacity");
+        if(opacityPercentage == 0) return;
+
+        float opacity = opacityPercentage / 100f;
+
         float x1 = tile.drawx(), y1 = tile.drawy(),
         x2 = target.drawx(), y2 = target.drawy();
 
@@ -292,8 +314,32 @@ public class PowerNode extends PowerBlock{
         float fract = 1f-tile.entity.power.graph.getSatisfaction();
 
         Draw.color(Color.white, Pal.powerLight, fract*0.86f + Mathf.absin(3f, 0.1f));
-        Drawf.laser(laser, laserEnd, x1, y1, x2, y2, 0.3f);
+        Draw.alpha(opacity);
+        Drawf.laser(laser, laserEnd, x1, y1, x2, y2, 0.25f);
         Draw.color();
     }
 
+    public static boolean insulated(Tile tile, Tile other){
+        return insulated(tile.x, tile.y, other.x, other.y);
+    }
+
+    public static boolean insulated(int x, int y, int x2, int y2){
+        final Boolean[] bool = {false};
+        insulators(x, y, x2, y2, cause -> {
+            bool[0] = true;
+        });
+        return bool[0];
+    }
+
+    public static void insulators(int x, int y, int x2, int y2, Consumer<Tile> iterator){
+        world.raycastEach(x, y, x2, y2, (wx, wy) -> {
+
+            Tile tile = world.ltile(wx, wy);
+            if(tile != null && tile.block() != null && tile.block().insulated){
+                iterator.accept(tile);
+            }
+
+            return false;
+        });
+    }
 }

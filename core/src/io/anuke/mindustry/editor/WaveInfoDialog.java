@@ -17,6 +17,7 @@ import io.anuke.mindustry.gen.*;
 import io.anuke.mindustry.graphics.*;
 import io.anuke.mindustry.io.*;
 import io.anuke.mindustry.type.*;
+import io.anuke.mindustry.ui.Cicon;
 import io.anuke.mindustry.ui.dialogs.*;
 
 import static io.anuke.mindustry.Vars.*;
@@ -140,7 +141,7 @@ public class WaveInfoDialog extends FloatingDialog{
                     t.margin(0).defaults().pad(3).padLeft(5f).growX().left();
                     t.addButton(b -> {
                         b.left();
-                        b.addImage(group.type.iconRegion).size(30f).padRight(3);
+                        b.addImage(group.type.icon(io.anuke.mindustry.ui.Cicon.medium)).size(32f).padRight(3);
                         b.add(group.type.localizedName).color(Pal.accent);
                     }, () -> showUpdate(group)).pad(-6f).padBottom(0f);
 
@@ -221,7 +222,7 @@ public class WaveInfoDialog extends FloatingDialog{
         for(UnitType type : content.units()){
             dialog.cont.addButton(t -> {
                 t.left();
-                t.addImage(type.iconRegion).size(40f).padRight(2f);
+                t.addImage(type.icon(io.anuke.mindustry.ui.Cicon.medium)).size(40f).padRight(2f);
                 t.add(type.localizedName);
             }, () -> {
                 lastType = type;
@@ -253,7 +254,7 @@ public class WaveInfoDialog extends FloatingDialog{
                 for(int j = 0; j < spawned.length; j++){
                     if(spawned[j] > 0){
                         UnitType type = content.getByID(ContentType.unit, j);
-                        table.addImage(type.iconRegion).size(30f).padRight(4);
+                        table.addImage(type.icon(Cicon.medium)).size(8f * 4f).padRight(4);
                         table.add(spawned[j] + "x").color(Color.lightGray).padRight(6);
                         table.row();
                     }

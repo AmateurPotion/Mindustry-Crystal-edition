@@ -3,10 +3,13 @@ package io.anuke.mindustry.io;
 import io.anuke.arc.collection.*;
 import io.anuke.arc.util.*;
 import io.anuke.arc.util.io.*;
+import io.anuke.mindustry.content.*;
+import io.anuke.mindustry.core.*;
+import io.anuke.mindustry.ctype.*;
 import io.anuke.mindustry.entities.*;
 import io.anuke.mindustry.entities.traits.*;
 import io.anuke.mindustry.game.*;
-import io.anuke.mindustry.gen.*;
+import io.anuke.mindustry.game.Teams.*;
 import io.anuke.mindustry.maps.*;
 import io.anuke.mindustry.type.*;
 import io.anuke.mindustry.world.*;
@@ -16,7 +19,7 @@ import java.io.*;
 import static io.anuke.mindustry.Vars.*;
 
 public abstract class SaveVersion extends SaveFileReader{
-    public final int version;
+    public int version;
 
     //HACK stores the last read build of the save file, valid after read meta call
     protected int lastReadBuild;
@@ -66,6 +69,7 @@ public abstract class SaveVersion extends SaveFileReader{
             "wavetime", state.wavetime,
             "stats", JsonIO.write(state.stats),
             "rules", JsonIO.write(state.rules),
+            "mods", JsonIO.write(mods.getModStrings().toArray(String.class)),
             "width", world.width(),
             "height", world.height()
         ).merge(tags));
@@ -80,6 +84,7 @@ public abstract class SaveVersion extends SaveFileReader{
         state.rules = JsonIO.read(Rules.class, map.get("rules", "{}"));
         if(state.rules.spawns.isEmpty()) state.rules.spawns = defaultWaves.get();
         lastReadBuild = map.getInt("build", -1);
+        String[] mods = JsonIO.read(String[].class, map.get("mods", "[]"));
 
         Map worldmap = maps.byName(map.get("mapname", "\\\\\\"));
         world.setMap(worldmap == null ? new Map(StringMap.of(
@@ -162,6 +167,7 @@ public abstract class SaveVersion extends SaveFileReader{
                 short floorid = stream.readShort();
                 short oreid = stream.readShort();
                 int consecutives = stream.readUnsignedByte();
+                if(content.block(floorid) == Blocks.air) floorid = Blocks.stone.id;
 
                 context.create(x, y, floorid, oreid, (short)0);
 
@@ -178,6 +184,7 @@ public abstract class SaveVersion extends SaveFileReader{
                 int x = i % width, y = i / width;
                 Block block = content.block(stream.readShort());
                 Tile tile = context.tile(x, y);
+                if(block == null) block = Blocks.air;
                 tile.setBlock(block);
 
                 if(tile.entity != null){
@@ -206,6 +213,21 @@ public abstract class SaveVersion extends SaveFileReader{
     }
 
     public void writeEntities(DataOutput stream) throws IOException{
+        //write team data with entities.
+        Array<TeamData> data = state.teams.getActive();
+        stream.writeInt(data.size);
+        for(TeamData team : data){
+            stream.writeInt(team.team.ordinal());
+            stream.writeInt(team.brokenBlocks.size);
+            for(BrokenBlock block : team.brokenBlocks){
+                stream.writeShort(block.x);
+                stream.writeShort(block.y);
+                stream.writeShort(block.rotation);
+                stream.writeShort(block.block);
+                stream.writeInt(block.config);
+            }
+        }
+
         //write entity chunk
         int groups = 0;
 
@@ -234,6 +256,16 @@ public abstract class SaveVersion extends SaveFileReader{
     }
 
     public void readEntities(DataInput stream) throws IOException{
+        int teamc = stream.readInt();
+        for(int i = 0; i < teamc; i++){
+            Team team = Team.all[stream.readInt()];
+            TeamData data = state.teams.get(team);
+            int blocks = stream.readInt();
+            for(int j = 0; j < blocks; j++){
+                data.brokenBlocks.addLast(new BrokenBlock(stream.readShort(), stream.readShort(), stream.readShort(), content.block(stream.readShort()).id, stream.readInt()));
+            }
+        }
+
         byte groups = stream.readByte();
 
         for(int i = 0; i < groups; i++){
@@ -286,19 +318,6 @@ public abstract class SaveVersion extends SaveFileReader{
                 stream.writeShort(arr.size);
                 for(Content c : arr){
                     stream.writeUTF(((MappableContent)c).name);
-                }
-            }
-        }
-    }
-
-    /** sometimes it's necessary to remap IDs after the content header is read.*/
-    public void remapContent(){
-        for(Team team : Team.all){
-            if(state.teams.isActive(team)){
-                LongQueue queue = state.teams.get(team).brokenBlocks;
-                for(int i = 0; i < queue.size; i++){
-                    //remap broken block IDs
-                    queue.set(i, BrokenBlock.block(queue.get(i), content.block(BrokenBlock.block(queue.get(i))).id));
                 }
             }
         }

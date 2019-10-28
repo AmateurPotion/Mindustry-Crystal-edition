@@ -1,18 +1,15 @@
 package io.anuke.mindustry.world.blocks.sandbox;
 
-import io.anuke.annotations.Annotations.Loc;
-import io.anuke.annotations.Annotations.Remote;
-import io.anuke.arc.Core;
-import io.anuke.arc.graphics.g2d.Draw;
-import io.anuke.arc.scene.ui.layout.Table;
-import io.anuke.mindustry.entities.type.Player;
-import io.anuke.mindustry.entities.type.TileEntity;
-import io.anuke.mindustry.gen.Call;
-import io.anuke.mindustry.type.Item;
-import io.anuke.mindustry.world.Block;
-import io.anuke.mindustry.world.Tile;
-import io.anuke.mindustry.world.blocks.ItemSelection;
-import io.anuke.mindustry.world.meta.BlockGroup;
+import io.anuke.arc.*;
+import io.anuke.arc.function.*;
+import io.anuke.arc.graphics.g2d.*;
+import io.anuke.arc.scene.ui.layout.*;
+import io.anuke.mindustry.entities.traits.BuilderTrait.*;
+import io.anuke.mindustry.entities.type.*;
+import io.anuke.mindustry.type.*;
+import io.anuke.mindustry.world.*;
+import io.anuke.mindustry.world.blocks.*;
+import io.anuke.mindustry.world.meta.*;
 
 import java.io.*;
 
@@ -30,23 +27,27 @@ public class ItemSource extends Block{
         configurable = true;
     }
 
-    @Remote(targets = Loc.both, called = Loc.both, forward = true)
-    public static void setItemSourceItem(Player player, Tile tile, Item item){
-        ItemSourceEntity entity = tile.entity();
-        if(entity != null){
-            entity.outputItem = item;
-        }
+    @Override
+    public void configured(Tile tile, Player player, int value){
+        tile.<ItemSourceEntity>entity().outputItem = content.item(value);
     }
 
     @Override
     public void playerPlaced(Tile tile){
-        Core.app.post(() -> Call.setItemSourceItem(null, tile, lastItem));
+        if(lastItem != null){
+            Core.app.post(() -> tile.configure(lastItem.id));
+        }
     }
 
     @Override
     public void setBars(){
         super.setBars();
         bars.remove("items");
+    }
+
+    @Override
+    public void drawRequestConfig(BuildRequest req, Eachable<BuildRequest> list){
+        drawRequestConfigCenter(req, content.item(req.config), "center");
     }
 
     @Override
@@ -81,7 +82,7 @@ public class ItemSource extends Block{
         ItemSourceEntity entity = tile.entity();
         ItemSelection.buildItemTable(table, () -> entity.outputItem, item -> {
             lastItem = item;
-            Call.setItemSourceItem(null, tile, item);
+            tile.configure(item == null ? -1 : item.id);
         });
     }
 
@@ -97,6 +98,11 @@ public class ItemSource extends Block{
 
     public class ItemSourceEntity extends TileEntity{
         Item outputItem;
+
+        @Override
+        public int config(){
+            return outputItem == null ? -1 : outputItem.id;
+        }
 
         @Override
         public void write(DataOutput stream) throws IOException{

@@ -15,14 +15,15 @@ import io.anuke.mindustry.entities.*;
 import io.anuke.mindustry.entities.traits.BuilderTrait.*;
 import io.anuke.mindustry.entities.traits.*;
 import io.anuke.mindustry.entities.type.*;
-import io.anuke.mindustry.game.EventType.*;
 import io.anuke.mindustry.game.*;
+import io.anuke.mindustry.game.EventType.*;
 import io.anuke.mindustry.gen.*;
 import io.anuke.mindustry.net.Administration.*;
 import io.anuke.mindustry.net.Net.*;
 import io.anuke.mindustry.net.*;
 import io.anuke.mindustry.net.Packets.*;
 import io.anuke.mindustry.type.*;
+import io.anuke.mindustry.type.TypeID;
 import io.anuke.mindustry.world.*;
 import io.anuke.mindustry.world.modules.*;
 
@@ -76,6 +77,7 @@ public class NetClient implements ApplicationListener{
 
             ConnectPacket c = new ConnectPacket();
             c.name = player.name;
+            c.mods = mods.getModStrings();
             c.mobile = mobile;
             c.versionType = Version.type;
             c.color = Color.rgba8888(player.color);
@@ -197,6 +199,15 @@ public class NetClient implements ApplicationListener{
         return "[#" + player.color.toString().toUpperCase() + "]" + name;
     }
 
+    @Remote(called = Loc.client, variants = Variant.one)
+    public static void onConnect(String ip, int port){
+        netClient.disconnectQuietly();
+        state.set(State.menu);
+        logic.reset();
+
+        ui.join.connect(ip, port);
+    }
+    
     @Remote(targets = Loc.client)
     public static void onPing(Player player, long time){
         Call.onPingResponse(player.con, time);
@@ -235,13 +246,18 @@ public class NetClient implements ApplicationListener{
         netClient.disconnectQuietly();
         state.set(State.menu);
         logic.reset();
-        ui.showText("$disconnect", reason);
+        ui.showText("$disconnect", reason, Align.left);
         ui.loadfrag.hide();
     }
 
     @Remote(variants = Variant.both)
     public static void onInfoMessage(String message){
         ui.showText("", message);
+    }
+
+    @Remote(variants = Variant.both)
+    public static void onSetRules(Rules rules){
+        state.rules = rules;
     }
 
     @Remote(variants = Variant.both)
@@ -329,6 +345,11 @@ public class NetClient implements ApplicationListener{
     @Remote(variants = Variant.one, priority = PacketPriority.low, unreliable = true)
     public static void onStateSnapshot(float waveTime, int wave, int enemies, short coreDataLen, byte[] coreData){
         try{
+            if(wave > state.wave){
+                state.wave = wave;
+                Events.fire(new WaveEvent());
+            }
+
             state.wavetime = waveTime;
             state.wave = wave;
             state.enemies = enemies;
@@ -450,7 +471,7 @@ public class NetClient implements ApplicationListener{
             player.pointerX, player.pointerY, player.rotation, player.baseRotation,
             player.velocity().x, player.velocity().y,
             player.getMineTile(),
-            player.isBoosting, player.isShooting, ui.chatfrag.chatOpen(),
+            player.isBoosting, player.isShooting, ui.chatfrag.chatOpen(), player.isBuilding,
             requests,
             Core.camera.position.x, Core.camera.position.y,
             Core.camera.width * viewScale, Core.camera.height * viewScale);

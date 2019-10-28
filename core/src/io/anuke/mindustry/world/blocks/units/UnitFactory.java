@@ -16,6 +16,7 @@ import io.anuke.mindustry.graphics.Pal;
 import io.anuke.mindustry.graphics.Shaders;
 import io.anuke.mindustry.type.*;
 import io.anuke.mindustry.ui.Bar;
+import io.anuke.mindustry.ui.Cicon;
 import io.anuke.mindustry.world.Block;
 import io.anuke.mindustry.world.Tile;
 import io.anuke.mindustry.world.consumers.ConsumeItems;
@@ -26,7 +27,7 @@ import java.io.*;
 import static io.anuke.mindustry.Vars.*;
 
 public class UnitFactory extends Block{
-    protected UnitType type;
+    protected UnitType unitType;
     protected float produceTime = 1000f;
     protected float launchVelocity = 0f;
     protected TextureRegion topRegion;
@@ -56,7 +57,7 @@ public class UnitFactory extends Block{
         Effects.effect(Fx.producesmoke, tile.drawx(), tile.drawy());
 
         if(!net.client()){
-            BaseUnit unit = factory.type.create(tile.getTeam());
+            BaseUnit unit = factory.unitType.create(tile.getTeam());
             unit.setSpawner(tile);
             unit.set(tile.drawx() + Mathf.range(4), tile.drawy() + Mathf.range(4));
             unit.add();
@@ -121,7 +122,7 @@ public class UnitFactory extends Block{
     @Override
     public void draw(Tile tile){
         UnitFactoryEntity entity = tile.entity();
-        TextureRegion region = type.iconRegion;
+        TextureRegion region = unitType.icon(Cicon.full);
 
         Draw.rect(name, tile.drawx(), tile.drawy());
 
@@ -169,7 +170,7 @@ public class UnitFactory extends Block{
             entity.buildTime = 0f;
 
             Call.onUnitFactorySpawn(tile, entity.spawned + 1);
-            useContent(tile, type);
+            useContent(tile, unitType);
 
             entity.cons.trigger();
         }
@@ -188,6 +189,11 @@ public class UnitFactory extends Block{
     public boolean canProduce(Tile tile){
         UnitFactoryEntity entity = tile.entity();
         return entity.spawned < maxSpawn;
+    }
+
+    @Override
+    public boolean shouldConsume(Tile tile){
+        return canProduce(tile);
     }
 
     public static class UnitFactoryEntity extends TileEntity{

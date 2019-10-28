@@ -1,16 +1,19 @@
-# Mindustry Crystal edition
+![Logo](core/assets/sprites/logo.png)
 
-_Crystal edition Github_
+[![Build Status](https://travis-ci.org/Anuken/Mindustry.svg?branch=master)](https://travis-ci.org/Anuken/Mindustry) 
+[![Discord](https://img.shields.io/discord/391020510269669376.svg)](https://discord.gg/mindustry)
 
-## _Running_
+A sandbox tower defense game written in Java.
 
-1. Move to release page
-2. Download the file for your platform.
-3. Just run the file.(java needed.)
+_[Trello Board](https://trello.com/b/aE2tcUwF/mindustry-40-plans)_  
+_[Wiki](https://mindustrygame.github.io/wiki)_ 
 
-### Information
+### Building
 
-- Discord : _https://discord.gg/g8R9XTK_
+Bleeding-edge live builds are generated automatically for every commit. You can see them [here](https://github.com/Anuken/MindustryBuilds/releases). Old builds might still be on [jenkins](https://jenkins.hellomouse.net/job/mindustry/).
+
+If you'd rather compile on your own, follow these instructions.
+First, make sure you have [Java 8](https://www.java.com/en/download/) and [JDK 8](https://adoptopenjdk.net/) installed. Open a terminal in the root directory, `cd` to the Mindustry folder and run the following commands:
 
 #### Windows
 
@@ -41,3 +44,17 @@ If the terminal returns `Permission denied` or `Command not found` on Mac/Linux,
 
 Gradle may take up to several minutes to download files. Be patient. <br>
 After building, the output .JAR file should be in `/desktop/build/libs/Mindustry.jar` for desktop builds, and in `/server/build/libs/server-release.jar` for server builds.
+
+### Downloads
+
+[<img src="https://static.itch.io/images/badge.svg"
+     alt="Get it on Itch.io"
+     height="60">](https://anuke.itch.io/mindustry)
+
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=io.anuke.mindustry)
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/io.anuke.mindustry/)

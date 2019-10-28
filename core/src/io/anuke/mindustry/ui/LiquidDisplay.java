@@ -20,7 +20,7 @@ public class LiquidDisplay extends Table{
         this.perSecond = perSecond;
 
         add(new Stack(){{
-            add(new Image(liquid.getContentIcon()));
+            add(new Image(liquid.icon(Cicon.medium)));
 
             if(amount != 0){
                 Table t = new Table().left().bottom();

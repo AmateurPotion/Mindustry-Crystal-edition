@@ -7,11 +7,10 @@ import io.anuke.arc.math.*;
 import io.anuke.arc.scene.ui.layout.*;
 import io.anuke.arc.util.*;
 import io.anuke.mindustry.content.*;
+import io.anuke.mindustry.ctype.UnlockableContent;
 import io.anuke.mindustry.entities.bullet.*;
-import io.anuke.mindustry.game.*;
 import io.anuke.mindustry.gen.*;
-import io.anuke.mindustry.type.*;
-import io.anuke.mindustry.type.Item.Icon;
+import io.anuke.mindustry.ui.Cicon;
 import io.anuke.mindustry.world.meta.*;
 
 import static io.anuke.mindustry.Vars.tilesize;
@@ -85,9 +84,6 @@ public class AmmoListValue<T extends UnlockableContent> implements StatValue{
     }
 
     TextureRegion icon(T t){
-        if(t instanceof Item){
-            return ((Item)t).icon(Icon.medium);
-        }
-        return t.getContentIcon();
+        return t.icon(Cicon.medium);
     }
 }

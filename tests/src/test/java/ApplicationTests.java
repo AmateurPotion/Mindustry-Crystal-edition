@@ -45,6 +45,7 @@ public class ApplicationTests{
                 public void setup(){
                     headless = true;
                     net = new Net(null);
+                    tree = new FileTree();
                     Vars.init();
                     content.createContent();
 
@@ -197,7 +198,7 @@ public class ApplicationTests{
     void save(){
         world.loadMap(testMap);
         assertTrue(state.teams.get(defaultTeam).cores.size > 0);
-        SaveIO.saveToSlot(0);
+        SaveIO.save(saveDirectory.child("0.msav"));
     }
 
     @Test
@@ -205,9 +206,9 @@ public class ApplicationTests{
         world.loadMap(testMap);
         Map map = world.getMap();
 
-        SaveIO.saveToSlot(0);
+        SaveIO.save(saveDirectory.child("0.msav"));
         resetWorld();
-        SaveIO.loadFromSlot(0);
+        SaveIO.load(saveDirectory.child("0.msav"));
 
         assertEquals(world.width(), map.width);
         assertEquals(world.height(), map.height);
@@ -340,7 +341,7 @@ public class ApplicationTests{
 
         for(int x = 5; x < tiles.length && i < content.blocks().size; ){
             Block block = content.block(i++);
-            if(block.buildVisibility.get()){
+            if(block.isBuildable()){
                 x += block.size;
                 tiles[x][5].setBlock(block);
                 x += block.size;

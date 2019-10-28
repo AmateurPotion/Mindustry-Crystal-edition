@@ -1,16 +1,16 @@
 package io.anuke.mindustry.world.blocks.distribution;
 
-import io.anuke.annotations.Annotations.*;
-import io.anuke.arc.Core;
+import io.anuke.arc.function.*;
 import io.anuke.arc.graphics.g2d.*;
-import io.anuke.arc.math.Mathf;
-import io.anuke.arc.scene.ui.layout.Table;
+import io.anuke.arc.math.*;
+import io.anuke.arc.scene.ui.layout.*;
+import io.anuke.arc.util.ArcAnnotate.*;
+import io.anuke.mindustry.entities.traits.BuilderTrait.*;
 import io.anuke.mindustry.entities.type.*;
-import io.anuke.mindustry.gen.Call;
-import io.anuke.mindustry.type.Item;
+import io.anuke.mindustry.type.*;
 import io.anuke.mindustry.world.*;
-import io.anuke.mindustry.world.blocks.ItemSelection;
-import io.anuke.mindustry.world.meta.BlockGroup;
+import io.anuke.mindustry.world.blocks.*;
+import io.anuke.mindustry.world.meta.*;
 
 import java.io.*;
 
@@ -18,6 +18,7 @@ import static io.anuke.mindustry.Vars.content;
 
 public class Sorter extends Block{
     private static Item lastItem;
+    protected boolean invert;
 
     public Sorter(String name){
         super(name);
@@ -36,15 +37,19 @@ public class Sorter extends Block{
 
     @Override
     public void playerPlaced(Tile tile){
-        Core.app.post(() -> Call.setSorterItem(null, tile, lastItem));
+        if(lastItem != null){
+            tile.configure(lastItem.id);
+        }
     }
 
-    @Remote(targets = Loc.both, called = Loc.both, forward = true)
-    public static void setSorterItem(Player player, Tile tile, Item item){
-        SorterEntity entity = tile.entity();
-        if(entity != null){
-            entity.sortItem = item;
-        }
+    @Override
+    public void configured(Tile tile, Player player, int value){
+        tile.<SorterEntity>entity().sortItem = content.item(value);
+    }
+
+    @Override
+    public void drawRequestConfig(BuildRequest req, Eachable<BuildRequest> list){
+        drawRequestConfigCenter(req, content.item(req.config), "center");
     }
 
     @Override
@@ -74,7 +79,7 @@ public class Sorter extends Block{
     }
 
     boolean isSame(Tile tile, Tile other){
-        return other != null && other.block() == this && other.<SorterEntity>entity().sortItem == tile.<SorterEntity>entity().sortItem;
+        return other != null && other.block() instanceof Sorter && other.<SorterEntity>entity().sortItem == tile.<SorterEntity>entity().sortItem;
     }
 
     Tile getTileTarget(Item item, Tile dest, Tile source, boolean flip){
@@ -84,7 +89,7 @@ public class Sorter extends Block{
         if(dir == -1) return null;
         Tile to;
 
-        if(item == entity.sortItem){
+        if((item == entity.sortItem) != invert){
             //prevent 3-chains
             if(isSame(dest, source) && isSame(dest, dest.getNearby(dir))){
                 return null;
@@ -107,12 +112,10 @@ public class Sorter extends Block{
             }else{
                 if(dest.rotation() == 0){
                     to = a;
-                    if(flip)
-                        dest.rotation((byte)1);
+                    if(flip) dest.rotation((byte)1);
                 }else{
                     to = b;
-                    if(flip)
-                        dest.rotation((byte)0);
+                    if(flip) dest.rotation((byte)0);
                 }
             }
         }
@@ -125,7 +128,7 @@ public class Sorter extends Block{
         SorterEntity entity = tile.entity();
         ItemSelection.buildItemTable(table, () -> entity.sortItem, item -> {
             lastItem = item;
-            Call.setSorterItem(null, tile, item);
+            tile.configure(item == null ? -1 : item.id);
         });
     }
 
@@ -136,7 +139,12 @@ public class Sorter extends Block{
 
 
     public class SorterEntity extends TileEntity{
-        Item sortItem;
+        @Nullable Item sortItem;
+
+        @Override
+        public int config(){
+            return sortItem == null ? -1 : sortItem.id;
+        }
 
         @Override
         public byte version(){

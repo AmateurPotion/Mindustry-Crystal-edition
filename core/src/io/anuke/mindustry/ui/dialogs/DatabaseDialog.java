@@ -1,20 +1,19 @@
 package io.anuke.mindustry.ui.dialogs;
 
-import io.anuke.arc.Core;
-import io.anuke.arc.collection.Array;
-import io.anuke.arc.graphics.Color;
-import io.anuke.arc.scene.event.ClickListener;
-import io.anuke.arc.scene.event.HandCursorListener;
+import io.anuke.arc.*;
+import io.anuke.arc.collection.*;
+import io.anuke.arc.graphics.*;
+import io.anuke.arc.scene.event.*;
 import io.anuke.arc.scene.ui.*;
-import io.anuke.arc.scene.ui.layout.Table;
-import io.anuke.arc.util.Time;
-import io.anuke.mindustry.Vars;
-import io.anuke.mindustry.core.GameState.State;
-import io.anuke.mindustry.game.Content;
-import io.anuke.mindustry.game.UnlockableContent;
+import io.anuke.arc.scene.ui.layout.*;
+import io.anuke.arc.util.*;
+import io.anuke.mindustry.*;
+import io.anuke.mindustry.core.GameState.*;
+import io.anuke.mindustry.ctype.*;
 import io.anuke.mindustry.gen.*;
-import io.anuke.mindustry.graphics.Pal;
-import io.anuke.mindustry.type.ContentType;
+import io.anuke.mindustry.graphics.*;
+import io.anuke.mindustry.type.*;
+import io.anuke.mindustry.ui.*;
 
 public class DatabaseDialog extends FloatingDialog{
 
@@ -56,7 +55,7 @@ public class DatabaseDialog extends FloatingDialog{
                 for(int i = 0; i < array.size; i++){
                     UnlockableContent unlock = (UnlockableContent)array.get(i);
 
-                    Image image = unlocked(unlock) ? new Image(unlock.getContentIcon()) : new Image(Icon.lockedSmall, Pal.gray);
+                    Image image = unlocked(unlock) ? new Image(unlock.icon(Cicon.medium)) : new Image(Icon.lockedSmall, Pal.gray);
                     list.add(image).size(8*4).pad(3);
                     ClickListener listener = new ClickListener();
                     image.addListener(listener);

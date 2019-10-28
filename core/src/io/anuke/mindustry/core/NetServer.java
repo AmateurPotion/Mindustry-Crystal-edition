@@ -94,14 +94,26 @@ public class NetServer implements ApplicationListener{
                 return;
             }
 
-            if(admins.isIDBanned(uuid)){
-                con.kick(KickReason.banned);
-                return;
-            }
-
             if(admins.getPlayerLimit() > 0 && playerGroup.size() >= admins.getPlayerLimit()){
                 con.kick(KickReason.playerLimit);
                 return;
+            }
+
+            Array<String> extraMods = packet.mods.copy();
+            Array<String> missingMods = mods.getIncompatibility(extraMods);
+
+            if(!extraMods.isEmpty() || !missingMods.isEmpty()){
+                //can't easily be localized since kick reasons can't have formatted text with them
+                StringBuilder result = new StringBuilder("[accent]Incompatible mods![]\n\n");
+                if(!missingMods.isEmpty()){
+                    result.append("Missing:[lightgray]\n").append("> ").append(missingMods.toString("\n> "));
+                    result.append("[]\n");
+                }
+
+                if(!extraMods.isEmpty()){
+                    result.append("Unnecessary mods:[lightgray]\n").append("> ").append(extraMods.toString("\n> "));
+                }
+                con.kick(result.toString());
             }
 
             if(!admins.isWhitelisted(packet.uuid, packet.usid)){
@@ -200,6 +212,11 @@ public class NetServer implements ApplicationListener{
         registerCommands();
     }
 
+    @Override
+    public void init(){
+        mods.each(mod -> mod.registerClientCommands(clientCommands));
+    }
+
     private void registerCommands(){
         clientCommands.<Player>register("help", "[page]", "Lists all commands.", (args, player) -> {
             if(args.length > 0 && !Strings.canParseInt(args[0])){
@@ -262,7 +279,7 @@ public class NetServer implements ApplicationListener{
             }
 
             boolean checkPass(){
-                if(votes >= votesRequired() && target.isAdded() && target.con.isConnected()){
+                if(votes >= votesRequired()){
                     Call.sendMessage(Strings.format("[orange]Vote passed.[scarlet] {0}[orange] will be banned from the server for {1} minutes.", target.name, (kickDuration/60)));
                     target.getInfo().lastKicked = Time.millis() + kickDuration*1000;
                     playerGroup.all().each(p -> p.uuid != null && p.uuid.equals(target.uuid), p -> p.con.kick(KickReason.vote));
@@ -314,6 +331,8 @@ public class NetServer implements ApplicationListener{
                         player.sendMessage("[scarlet]Did you really expect to be able to kick an admin?");
                     }else if(found.isLocal){
                         player.sendMessage("[scarlet]Local players cannot be kicked.");
+                    }else if(found.getTeam() != player.getTeam()){
+                        player.sendMessage("[scarlet]Only players on your team can be kicked.");
                     }else{
                         if(!vtime.get()){
                             player.sendMessage("[scarlet]You must wait " + voteTime/60 + " minutes between votekicks.");
@@ -335,6 +354,11 @@ public class NetServer implements ApplicationListener{
             if(currentlyKicking[0] == null){
                 player.sendMessage("[scarlet]Nobody is being voted on.");
             }else{
+                if(player.isLocal){
+                    player.sendMessage("Local players can't vote. Kick the player yourself instead.");
+                    return;
+                }
+
                 //hosts can vote all they want
                 if(player.uuid != null && (currentlyKicking[0].voted.contains(player.uuid) || currentlyKicking[0].voted.contains(admins.getInfo(player.uuid).lastIP))){
                     player.sendMessage("[scarlet]You've already voted. Sit down.");
@@ -428,7 +452,7 @@ public class NetServer implements ApplicationListener{
         float rotation, float baseRotation,
         float xVelocity, float yVelocity,
         Tile mining,
-        boolean boosting, boolean shooting, boolean chatting,
+        boolean boosting, boolean shooting, boolean chatting, boolean building,
         BuildRequest[] requests,
         float viewX, float viewY, float viewWidth, float viewHeight
     ){
@@ -447,7 +471,7 @@ public class NetServer implements ApplicationListener{
         long elapsed = Time.timeSinceMillis(connection.lastRecievedClientTime);
 
         float maxSpeed = boosting && !player.mech.flying ? player.mech.compoundSpeedBoost : player.mech.compoundSpeed;
-        float maxMove = elapsed / 1000f * 60f * Math.min(maxSpeed, player.mech.maxSpeed) * 1.1f;
+        float maxMove = elapsed / 1000f * 60f * Math.min(maxSpeed, player.mech.maxSpeed) * 1.2f;
 
         player.pointerX = pointerX;
         player.pointerY = pointerY;
@@ -455,6 +479,7 @@ public class NetServer implements ApplicationListener{
         player.isTyping = chatting;
         player.isBoosting = boosting;
         player.isShooting = shooting;
+        player.isBuilding = building;
         player.buildQueue().clear();
         for(BuildRequest req : requests){
             if(req == null) continue;

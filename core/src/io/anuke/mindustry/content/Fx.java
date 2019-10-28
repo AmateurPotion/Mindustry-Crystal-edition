@@ -5,13 +5,13 @@ import io.anuke.arc.graphics.*;
 import io.anuke.arc.graphics.g2d.*;
 import io.anuke.arc.math.*;
 import io.anuke.arc.util.*;
+import io.anuke.mindustry.ctype.ContentList;
 import io.anuke.mindustry.entities.Effects.*;
 import io.anuke.mindustry.entities.effect.GroundEffectEntity.*;
 import io.anuke.mindustry.entities.type.*;
-import io.anuke.mindustry.game.*;
 import io.anuke.mindustry.graphics.*;
 import io.anuke.mindustry.type.*;
-import io.anuke.mindustry.type.Item.*;
+import io.anuke.mindustry.ui.Cicon;
 
 import static io.anuke.mindustry.Vars.tilesize;
 
@@ -552,7 +552,7 @@ public class Fx implements ContentList{
             float length = 20f * e.finpow();
             float size = 7f * e.fout();
 
-            Draw.rect(((Item)e.data).icon(Icon.large), e.x + Angles.trnsx(e.rotation, length), e.y + Angles.trnsy(e.rotation, length), size, size);
+            Draw.rect(((Item)e.data).icon(Cicon.medium), e.x + Angles.trnsx(e.rotation, length), e.y + Angles.trnsy(e.rotation, length), size, size);
         });
 
 

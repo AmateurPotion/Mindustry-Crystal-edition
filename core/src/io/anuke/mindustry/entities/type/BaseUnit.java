@@ -6,6 +6,7 @@ import io.anuke.arc.graphics.g2d.*;
 import io.anuke.arc.math.*;
 import io.anuke.arc.math.geom.*;
 import io.anuke.arc.util.*;
+import io.anuke.arc.util.ArcAnnotate.*;
 import io.anuke.mindustry.*;
 import io.anuke.mindustry.content.*;
 import io.anuke.mindustry.entities.*;
@@ -15,6 +16,8 @@ import io.anuke.mindustry.game.EventType.*;
 import io.anuke.mindustry.game.*;
 import io.anuke.mindustry.gen.*;
 import io.anuke.mindustry.type.*;
+import io.anuke.mindustry.type.TypeID;
+import io.anuke.mindustry.ui.Cicon;
 import io.anuke.mindustry.world.*;
 import io.anuke.mindustry.world.blocks.*;
 import io.anuke.mindustry.world.blocks.defense.DeflectorWall.*;
@@ -93,7 +96,8 @@ public abstract class BaseUnit extends Unit implements ShooterTrait{
         }
     }
 
-    public @Nullable Tile getSpawner(){
+    public @Nullable
+    Tile getSpawner(){
         return world.tile(spawner);
     }
 
@@ -234,7 +238,7 @@ public abstract class BaseUnit extends Unit implements ShooterTrait{
 
     @Override
     public TextureRegion getIconRegion(){
-        return type.iconRegion;
+        return type.icon(Cicon.full);
     }
 
     @Override
@@ -263,7 +267,7 @@ public abstract class BaseUnit extends Unit implements ShooterTrait{
 
     @Override
     public boolean isFlying(){
-        return type.isFlying;
+        return type.flying;
     }
 
     @Override
