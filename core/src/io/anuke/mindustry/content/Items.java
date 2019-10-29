@@ -24,6 +24,18 @@ public class Items implements ContentList{
             cost = 0.7f;
         }};
 
+        scrap = new Item("scrap", Color.valueOf("777777")){{
+            type = ItemType.material;
+            hardness = 1;
+            cost = 0.5f;
+        }};
+
+        coal = new Item("coal", Color.valueOf("272727")){{
+            explosiveness = 0.2f;
+            flammability = 1f;
+            hardness = 2;
+        }};
+
         metaglass = new Item("metaglass", Color.valueOf("ebeef5")){{
             type = ItemType.material;
             cost = 1.5f;
@@ -36,12 +48,6 @@ public class Items implements ContentList{
 
         sand = new Item("sand", Color.valueOf("f7cba4")){{
 
-        }};
-
-        coal = new Item("coal", Color.valueOf("272727")){{
-            explosiveness = 0.2f;
-            flammability = 1f;
-            hardness = 2;
         }};
 
         titanium = new Item("titanium", Color.valueOf("8da1e3")){{
@@ -58,8 +64,12 @@ public class Items implements ContentList{
             cost = 1.1f;
         }};
 
-        scrap = new Item("scrap", Color.valueOf("777777")){{
-
+        polarstone = new Item("polarstone", Color.valueOf("FE2E64")){{
+            type = ItemType.material;
+            hardness = 4;
+            explosiveness = 2f;
+            radioactivity = 3f;
+            cost = 1.1f;
         }};
 
         silicon = new Item("silicon", Color.valueOf("53565c")){{
@@ -82,6 +92,12 @@ public class Items implements ContentList{
 
         surgealloy = new Item("surge-alloy", Color.valueOf("f3e979")){{
             type = ItemType.material;
+        }};
+
+        crystal = new Item("crystal", Color.valueOf("00FFBF")){{
+            type = ItemType.material;
+            hardness = 4;
+            cost = 1.1f;
         }};
 
         sporePod = new Item("spore-pod", Color.valueOf("7457ce")){{
