@@ -24,6 +24,7 @@ public class Mechs implements ContentList{
     public void load(){
 
         alpha = new Mech("alpha-mech", false){
+            float cooldown = 1000;
             {
                 drillPower = 1;
                 mineSpeed = 1.5f;
@@ -42,11 +43,28 @@ public class Mechs implements ContentList{
                     ejectEffect = Fx.shellEjectSmall;
                     bullet = Bullets.standardMechSmall;
                 }};
+
+
+
+
+
             }
 
             @Override
             public void updateAlt(Player player){
                 player.healBy(Time.delta() * 0.09f);
+
+            }
+
+            @Override
+            public void onLand(Player player){
+                if(player.timer.get(Player.timerAbility, cooldown)){
+                    for(int i = 0; i < 1; i++){
+                        BaseUnit spawndigger = UnitTypes.digger.create(player.getTeam());
+                        spawndigger.set(player.getX(), player.getY());
+                        spawndigger.add();
+                    }
+                }
             }
 
         };

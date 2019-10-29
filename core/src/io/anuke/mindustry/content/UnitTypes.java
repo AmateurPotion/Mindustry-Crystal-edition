@@ -11,12 +11,28 @@ import io.anuke.mindustry.type.*;
 
 public class UnitTypes implements ContentList{
     public static UnitType
-    draug, spirit, phantom,
+    digger, draug, spirit, phantom,
     wraith, ghoul, revenant, lich, reaper,
     dagger, crawler, titan, fortress, eruptor, chaosArray, eradicator;
 
     @Override
     public void load(){
+        digger = new UnitType("digger", Digger::new){{
+            flying = true;
+            drag = 0.01f;
+            speed = 0.3f;
+            maxVelocity = 1.2f;
+            range = 50f;
+            health = 1;
+            minePower = 0.9f;
+            engineSize = 1.8f;
+            engineOffset = 5.7f;
+            toMine = ObjectSet.with(new Item[]{Items.scrap});
+            weapon = new Weapon("you have incurred my wrath. prepare to die."){{
+                bullet = Bullets.lancerLaser;
+            }};
+        }};
+
         draug = new UnitType("draug", Draug::new){{
             flying = true;
             drag = 0.01f;
@@ -27,6 +43,7 @@ public class UnitTypes implements ContentList{
             minePower = 0.9f;
             engineSize = 1.8f;
             engineOffset = 5.7f;
+            toMine = ObjectSet.with(new Item[]{Items.lead, Items.copper});
             weapon = new Weapon("you have incurred my wrath. prepare to die."){{
                 bullet = Bullets.lancerLaser;
             }};
