@@ -97,7 +97,7 @@ public class Items implements ContentList{
         crystal = new Item("crystal", Color.valueOf("00FFBF")){{
             type = ItemType.material;
             hardness = 4;
-            cost = 1.1f;
+            cost = 4f;
         }};
 
         sporePod = new Item("spore-pod", Color.valueOf("7457ce")){{
