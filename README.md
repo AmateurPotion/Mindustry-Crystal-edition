@@ -12,6 +12,14 @@ _Crystal edition Github_
 
 - Discord : _https://discord.gg/g8R9XTK_
 
+### Translating support
+
+1. move to core/asset/bundle/
+2. open bundle_(language code).properties
+3. Compare and work with bundle.properties.
+
+`_Translating is similar to the original._`
+
 #### Windows
 
 _Running:_ `gradlew desktop:run`  
