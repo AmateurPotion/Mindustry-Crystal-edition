@@ -17,6 +17,7 @@ _Crystal edition Github_
 1. move to core/asset/bundle/
 2. open bundle_(language code).properties
 3. Compare and work with bundle.properties.
+4. If you need more advice, read Translating.md
 
 `_Translating is similar to the original._`
 
