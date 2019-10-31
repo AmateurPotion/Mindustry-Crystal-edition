@@ -37,6 +37,8 @@ public class UpgradeProjector extends Block{
     protected float reload = 250f;
     protected float range = 60f;
     protected float healPercent = 12f;
+    protected float speedBoost = 1.5f;
+    protected float speedBoostPhase = 0.75f;
     protected float phaseBoost = 12f;
     protected float phaseRangeBoost = 50f;
     protected float useTime = 400f;
@@ -47,6 +49,7 @@ public class UpgradeProjector extends Block{
         update = true;
         hasPower = true;
         hasItems = true;
+        canOverdrive = false;
     }
 
     @Override
@@ -65,15 +68,17 @@ public class UpgradeProjector extends Block{
         super.setStats();
 
         stats.add(BlockStat.repairTime, (int)(100f / healPercent * reload / 60f), StatUnit.seconds);
+        stats.add(BlockStat.speedIncrease, (int)(100f * speedBoost), StatUnit.percent);
         stats.add(BlockStat.range, range / tilesize, StatUnit.blocks);
 
         stats.add(BlockStat.boostEffect, phaseRangeBoost / tilesize, StatUnit.blocks);
+        stats.add(BlockStat.boostEffect, (int)((speedBoost + speedBoostPhase) * 100f), StatUnit.percent);
         stats.add(BlockStat.boostEffect, (phaseBoost + healPercent) / healPercent, StatUnit.timesSpeed);
     }
 
     @Override
     public void update(Tile tile){
-        MendEntity entity = tile.entity();
+        UpgradeEntity entity = tile.entity();
         entity.heat = Mathf.lerpDelta(entity.heat, entity.cons.valid() || tile.isEnemyCheat() ? 1f : 0f, 0.08f);
         entity.charge += entity.heat * entity.delta();
 
@@ -85,6 +90,8 @@ public class UpgradeProjector extends Block{
 
         if(entity.charge >= reload){
             float realRange = range + entity.phaseHeat * phaseRangeBoost;
+            float realBoost = (speedBoost + entity.phaseHeat * speedBoostPhase) * entity.power.satisfaction;
+
             entity.charge = 0f;
 
             int tileRange = (int)(realRange / tilesize + 1);
@@ -98,9 +105,15 @@ public class UpgradeProjector extends Block{
 
                     if(other == null) continue;
 
-                    if(other.getTeamID() == tile.getTeamID() && !healed.contains(other.pos()) && other.entity != null && other.entity.health < other.entity.maxHealth()){
-                        other.entity.healBy(other.entity.maxHealth() * (healPercent + entity.phaseHeat * phaseBoost) / 100f * entity.power.satisfaction);
-                        Effects.effect(Fx.healBlockFull, Tmp.c1.set(color).lerp(phase, entity.phaseHeat), other.drawx(), other.drawy(), other.block().size);
+                    if(other.getTeamID() == tile.getTeamID() && !healed.contains(other.pos()) && other.entity != null){
+                        if(other.entity.timeScale <= realBoost){
+                            other.entity.timeScaleDuration = Math.max(other.entity.timeScaleDuration, reload + 1f);
+                            other.entity.timeScale = Math.max(other.entity.timeScale, realBoost);
+                        }
+                        if(other.entity.health < other.entity.maxHealth()) {
+                            other.entity.healBy(other.entity.maxHealth() * (healPercent + entity.phaseHeat * phaseBoost) / 100f * entity.power.satisfaction);
+                            Effects.effect(Fx.healBlockFull, Tmp.c1.set(color).lerp(phase, entity.phaseHeat), other.drawx(), other.drawy(), other.block().size);
+                        }
                         healed.add(other.pos());
                     }
                 }
@@ -115,7 +128,7 @@ public class UpgradeProjector extends Block{
 
     @Override
     public void drawSelect(Tile tile){
-        MendEntity entity = tile.entity();
+        UpgradeEntity entity = tile.entity();
         float realRange = range + entity.phaseHeat * phaseRangeBoost;
 
         Drawf.dashCircle(tile.drawx(), tile.drawy(), realRange, color);
@@ -125,7 +138,7 @@ public class UpgradeProjector extends Block{
     public void draw(Tile tile){
         super.draw(tile);
 
-        MendEntity entity = tile.entity();
+        UpgradeEntity entity = tile.entity();
         float f = 1f - (Time.time() / 100f) % 1f;
 
         Draw.color(color, phase, entity.phaseHeat);
@@ -143,10 +156,10 @@ public class UpgradeProjector extends Block{
 
     @Override
     public TileEntity newEntity(){
-        return new MendEntity();
+        return new UpgradeEntity();
     }
 
-    class MendEntity extends TileEntity{
+    class UpgradeEntity extends TileEntity{
         float heat;
         float charge;
         float phaseHeat;
