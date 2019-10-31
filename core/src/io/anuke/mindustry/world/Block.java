@@ -37,7 +37,7 @@ import java.util.*;
 import static io.anuke.mindustry.Vars.*;
 
 public class Block extends BlockStorage{
-    public static final int crackRegions = 8, maxCrackSize = 5;
+    public static final int crackRegions = 8, maxCrackSize = 8;
 
     /** whether this block has a tile entity that updates */
     public boolean update;

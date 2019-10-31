@@ -99,6 +99,8 @@ public class deflectorConveyor extends Block implements Autotiler{
             region = variantRegions[0];
         }
 
+
+
         for(int i = 0; i < regions.length; i++){
             for(int j = 0; j < 4; j++){
                 regions[i][j] = Core.atlas.find(name + "-" + i + "-" + j);
@@ -114,7 +116,8 @@ public class deflectorConveyor extends Block implements Autotiler{
         }else{
             Draw.rect(variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))], tile.drawx(), tile.drawy());
         }
-//conveyor
+
+
         super.draw(tile);
 
         deflectorConveyorEntity entity1 = tile.entity();
@@ -127,6 +130,9 @@ public class deflectorConveyor extends Block implements Autotiler{
         Draw.reset();
 
         entity1.hit = Mathf.clamp(entity1.hit - Time.delta() / hitTime);
+
+        //conveyor
+
 
 
         deflectorConveyorEntity entity2 = tile.entity();

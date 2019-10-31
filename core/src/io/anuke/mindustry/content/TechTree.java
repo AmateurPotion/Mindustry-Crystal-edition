@@ -52,7 +52,7 @@ public class TechTree implements ContentList{
 
                                 });
                             });
-                            node(deflectorConveyor, () -> {
+                            node(protectConveyor, () -> {
 
                             });
                             node(armoredConveyor, () -> {
@@ -134,7 +134,7 @@ public class TechTree implements ContentList{
                                 node(surgeWallLarge);
                                 node(phaseWall, () -> {
                                     node(phaseWallLarge, () -> {
-                                        node(crystalWall);
+                                        node(sanctuaryProjector);
                                     });
                                 });
                             });

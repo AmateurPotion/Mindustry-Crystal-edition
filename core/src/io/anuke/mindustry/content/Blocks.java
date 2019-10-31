@@ -55,10 +55,10 @@ public class Blocks implements ContentList{
     //defense
     scrapWall, scrapWallLarge, scrapWallHuge, scrapWallGigantic, thruster, //ok, these names are getting ridiculous, but at least I don't have humongous walls yet
     copperWall, copperWallLarge, titaniumWall, titaniumWallLarge, plastaniumWall, plastaniumWallLarge, thoriumWall, thoriumWallLarge, door, doorLarge,
-    phaseWall, phaseWallLarge, surgeWall, surgeWallLarge, crystalWall, mender, mendProjector, overdriveProjector, forceProjector, shockMine,
+    phaseWall, phaseWallLarge, surgeWall, surgeWallLarge, sanctuaryProjector, mender, mendProjector, overdriveProjector, forceProjector, shockMine,
 
     //transport
-    conveyor, titaniumConveyor, armoredConveyor, deflectorConveyor, distributor, junction, itemBridge, phaseConveyor, sorter, invertedSorter, router, overflowGate, massDriver,
+    conveyor, titaniumConveyor, armoredConveyor, protectConveyor, distributor, junction, itemBridge, phaseConveyor, sorter, invertedSorter, router, overflowGate, massDriver,
 
     //liquids
     mechanicalPump, waterExtractor, rotaryPump, thermalPump, oilExtractor, conduit, pulseConduit, liquidRouter, liquidTank, liquidJunction, bridgeConduit, phaseConduit, biotechnologyFacilities,
@@ -87,7 +87,7 @@ public class Blocks implements ContentList{
     testaddon, crafteraddon;
 
     //Crystal edition list
-    //crystalLab,crystalDrill,biotechnologyFacilities,polarbattery,energyInjector,nuclearLauncher,siliconcompounder,deflectorConveyor,crystalWall
+    //crystalLab,crystalDrill,biotechnologyFacilities,polarbattery,energyInjector,nuclearLauncher,siliconcompounder,protectConveyor,sanctuaryProjector
 
     @Override
     public void load(){
@@ -896,17 +896,6 @@ public class Blocks implements ContentList{
             size = 2;
         }};
 
-        crystalWall = new MendProjector("crystal-wall"){{
-            requirements(Category.defense, ItemStack.with(Items.crystal, 1));
-            health = 1 * wallHealthMultiplier;
-            size = 1;
-
-            reload = 25f;
-            range = 60f;
-            healPercent = 1f;
-            consumes.power(0f);
-        }};
-
         door = new Door("door"){{
             requirements(Category.defense, ItemStack.with(Items.graphite, 6, Items.silicon, 4));
             health = 100 * wallHealthMultiplier;
@@ -958,6 +947,19 @@ public class Blocks implements ContentList{
             consumes.power(3f);
         }};
 
+        sanctuaryProjector = new UpgradeProjector("sanctuary-projector"){{
+            requirements(Category.effect, ItemStack.with(Items.lead, 1000, Items.graphite, 100, Items.plastanium, 500, Items.surgealloy, 300, Items.polarstone, 100));
+            health = 100;
+            size = 3;
+            useTime = 4000f;
+            range = 60f;
+            phaseRangeBoost = 600f;
+
+            reload = 25f;
+            consumes.item(Items.crystal).boost();
+            consumes.power(5f);
+        }};
+
         shockMine = new ShockMine("shock-mine"){{
             requirements(Category.effect, ItemStack.with(Items.lead, 25, Items.silicon, 12));
             hasShadow = false;
@@ -989,7 +991,7 @@ public class Blocks implements ContentList{
             speed = 0.08f;
         }};
 
-        deflectorConveyor = new deflectorConveyor("deflector-conveyor"){{
+        protectConveyor = new deflectorConveyor("protect-conveyor"){{
             requirements(Category.distribution, ItemStack.with(Items.lead, 3, Items.polarstone, 1, Items.phasefabric, 1));
             health = 200;
             speed = 0.1f;

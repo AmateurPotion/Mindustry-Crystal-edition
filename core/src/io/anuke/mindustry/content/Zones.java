@@ -7,7 +7,6 @@ import io.anuke.mindustry.maps.generators.*;
 import io.anuke.mindustry.maps.generators.MapGenerator.*;
 import io.anuke.mindustry.maps.zonegen.*;
 import io.anuke.mindustry.type.*;
-import io.anuke.mindustry.world.Block;
 
 import static io.anuke.arc.collection.Array.with;
 import static io.anuke.mindustry.content.Items.*;
@@ -143,7 +142,7 @@ public class Zones implements ContentList{
             requirements = with(
                     new ZoneWave(craters, 30),
                     new Unlock(Blocks.polarbattery),
-                    new Unlock(Blocks.deflectorConveyor)
+                    new Unlock(Blocks.protectConveyor)
             );
             resources = with(copper, lead, coal, sand, scrap, titanium, thorium, polarstone);
         }};
