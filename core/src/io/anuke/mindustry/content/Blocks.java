@@ -994,7 +994,7 @@ public class Blocks implements ContentList{
         protectConveyor = new deflectorConveyor("protect-conveyor"){{
             requirements(Category.distribution, ItemStack.with(Items.lead, 3, Items.polarstone, 1, Items.phasefabric, 1));
             health = 200;
-            speed = 0.1f;
+            speed = 0.14f;
         }};
 
         junction = new Junction("junction"){{
