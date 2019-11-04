@@ -1,15 +1,19 @@
 package io.anuke.mindustry.world.blocks.distribution;
 
+import io.anuke.arc.*;
 import io.anuke.arc.collection.*;
+import io.anuke.arc.func.*;
 import io.anuke.arc.graphics.g2d.*;
+import io.anuke.arc.math.*;
 import io.anuke.arc.math.geom.*;
 import io.anuke.arc.util.*;
+import io.anuke.mindustry.content.*;
 import io.anuke.mindustry.entities.traits.BuilderTrait.*;
 import io.anuke.mindustry.entities.type.*;
 import io.anuke.mindustry.gen.*;
 import io.anuke.mindustry.graphics.*;
 import io.anuke.mindustry.type.*;
-import io.anuke.mindustry.ui.Cicon;
+import io.anuke.mindustry.ui.*;
 import io.anuke.mindustry.world.*;
 import io.anuke.mindustry.world.blocks.*;
 import io.anuke.mindustry.world.meta.*;
@@ -62,6 +66,7 @@ public class deflectorConveyor extends Block implements Autotiler{
         group = BlockGroup.transportation;
         hasItems = true;
         itemCapacity = 4;
+        conveyorPlacement = true;
 
         idleSound = Sounds.conveyor;
         idleSoundVolume = 0.004f;
@@ -77,7 +82,7 @@ public class deflectorConveyor extends Block implements Autotiler{
     @Override
     public void setStats(){
         super.setStats();
-        stats.add(BlockStat.itemsMoved, speed * 60 * (1f / itemSpace), StatUnit.itemsSecond);
+        stats.add(BlockStat.itemsMoved, speed * 60 / itemSpace, StatUnit.itemsSecond);
     }
 
     @Override
@@ -306,6 +311,16 @@ public class deflectorConveyor extends Block implements Autotiler{
     }
 
     @Override
+    public Block getReplacement(BuildRequest req, Array<BuildRequest> requests){
+        Boolf<Point2> cont = p -> requests.contains(o -> o.x == req.x + p.x && o.y == req.y + p.y && o.rotation == req.rotation && (req.block instanceof Conveyor || req.block instanceof Junction));
+        return cont.get(Geometry.d4(req.rotation)) &&
+            cont.get(Geometry.d4(req.rotation - 2)) &&
+            req.tile() != null &&
+            req.tile().block() instanceof Conveyor &&
+            Mathf.mod(req.tile().rotation() - req.rotation, 2) == 1 ? Blocks.junction : this;
+    }
+
+    @Override
     public int removeStack(Tile tile, Item item, int amount){
         deflectorConveyorEntity entity = tile.entity();
         entity.noSleep();
@@ -475,7 +490,7 @@ public class deflectorConveyor extends Block implements Autotiler{
             float y = ((int)values[2] + 128) / 255f;
 
             short[] shorts = writeShort;
-            shorts[0] = (short)itemid;
+            shorts[0] = itemid;
             shorts[1] = (short)(x * Short.MAX_VALUE);
             shorts[2] = (short)((y - 1f) * Short.MAX_VALUE);
             return Pack.longShorts(shorts);

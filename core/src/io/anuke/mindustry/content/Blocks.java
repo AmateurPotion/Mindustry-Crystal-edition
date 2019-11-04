@@ -45,7 +45,7 @@ public class Blocks implements ContentList{
 
     //crafting
     siliconSmelter, kiln, graphitePress, plastaniumCompressor, multiPress, phaseWeaver, surgeSmelter, pyratiteMixer, blastMixer, cryofluidMixer,
-    melter, separator, sporePress, pulverizer, incinerator, coalCentrifuge, crystalLab, siliconCompounder,
+    melter, separator, sporePress, pulverizer, incinerator, coalCentrifuge, crystalLab, siliconCompounder, phaseShifter,
 
     //sandbox
     powerVoid, powerSource, itemSource, liquidSource, itemVoid, message,
@@ -470,7 +470,7 @@ public class Blocks implements ContentList{
             consumes.power(0.50f);
         }};
 
-        siliconCompounder = new GenericSmelter("Silicon-Compounder"){{
+        siliconCompounder = new GenericSmelter("silicon-compounder"){{
             requirements(Category.crafting, ItemStack.with(Items.scrap, 200, Items.copper,140, Items.lead, 100, Items.graphite, 50));
             hasItems = true;
             liquidCapacity = 60f;
@@ -485,6 +485,19 @@ public class Blocks implements ContentList{
             consumes.liquid(Liquids.slag, 0.01f);
             consumes.item(Items.scrap, 8);
             consumes.power(2f);
+        }};
+
+        phaseShifter = new GenericSmelter("phase-shifter"){{
+            requirements(Category.crafting, ItemStack.with(Items.copper, 100, Items.lead, 100));
+            craftEffect = Fx.smeltsmoke;
+            outputItem = new ItemStack(Items.prisium, 2);
+            craftTime = 40f;
+            size = 2;
+            hasPower = true;
+            hasLiquids = false;
+
+            consumes.items(new ItemStack(Items.coal, 1), new ItemStack(Items.sand, 1), new ItemStack(Items.lead, 1), new ItemStack(Items.copper, 1));
+            consumes.power(0.50f);
         }};
 
         kiln = new GenericSmelter("kiln"){{

@@ -7,7 +7,7 @@ import io.anuke.mindustry.type.ItemType;
 
 public class Items implements ContentList{
     public static Item scrap, copper, lead, graphite, coal, titanium, polarstone, thorium, silicon, plastanium, phasefabric, surgealloy,
-    sporePod, sand, blastCompound, pyratite, metaglass, crystal;
+    sporePod, sand, blastCompound, pyratite, metaglass, crystal, prisium;
 
     @Override
     public void load(){
@@ -75,6 +75,11 @@ public class Items implements ContentList{
         silicon = new Item("silicon", Color.valueOf("53565c")){{
             type = ItemType.material;
             cost = 0.8f;
+        }};
+
+        prisium = new Item("prisium", Color.valueOf("53565c")){{
+            type = ItemType.material;
+            cost = 1f;
         }};
 
         plastanium = new Item("plastanium", Color.valueOf("cbd97f")){{
