@@ -13,13 +13,14 @@
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:isGame="true"
+            android:usesCleartextTraffic="true"
             android:appCategory="game"
-            android:label="Cindustry"
+            android:label="@string/app_name"
             android:theme="@style/GdxTheme" android:fullBackupContent="@xml/backup_rules">
         <meta-data android:name="android.max_aspect" android:value="2.1"/>
         <activity
                 android:name="io.anuke.mindustry.AndroidLauncher"
-                android:label="Mindustry crystal edition"
+                android:label="@string/app_name"
                 android:screenOrientation="user"
                 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout">
 

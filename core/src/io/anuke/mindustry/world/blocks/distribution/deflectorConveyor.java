@@ -1,10 +1,7 @@
 package io.anuke.mindustry.world.blocks.distribution;
 
-import io.anuke.arc.*;
 import io.anuke.arc.collection.*;
-import io.anuke.arc.function.*;
 import io.anuke.arc.graphics.g2d.*;
-import io.anuke.arc.math.*;
 import io.anuke.arc.math.geom.*;
 import io.anuke.arc.util.*;
 import io.anuke.mindustry.entities.traits.BuilderTrait.*;
@@ -31,8 +28,6 @@ import static io.anuke.mindustry.Vars.itemSize;
 import static io.anuke.mindustry.Vars.tilesize;
 import java.io.*;
 
-import static io.anuke.mindustry.Vars.*;
-
 public class deflectorConveyor extends Block implements Autotiler{
     protected int variants = 0;
 
@@ -43,8 +38,7 @@ public class deflectorConveyor extends Block implements Autotiler{
     private static ItemPos pos2 = new ItemPos();
     private final Vector2 tr1 = new Vector2();
     private final Vector2 tr2 = new Vector2();
-    private final int[] blendresult = new int[3];
-    private final BuildRequest[] directionals = new BuildRequest[4];
+
     //shield
     public static final float hitTime = 10f;
 

@@ -24,8 +24,6 @@ import io.anuke.mindustry.world.blocks.power.*;
 import io.anuke.mindustry.world.blocks.production.*;
 import io.anuke.mindustry.world.blocks.sandbox.*;
 import io.anuke.mindustry.world.blocks.storage.*;
-import io.anuke.mindustry.world.blocks.storage.addon.AddonBase;
-import io.anuke.mindustry.world.blocks.storage.addon.CrafterAddon;
 import io.anuke.mindustry.world.blocks.units.*;
 import io.anuke.mindustry.world.consumers.*;
 import io.anuke.mindustry.world.meta.*;
@@ -81,10 +79,10 @@ public class Blocks implements ContentList{
     fortressFactory, chaosArrayFactory, eradicatorFactory, repairPoint,
 
     //upgrades
-    dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad,
+    dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad
 
     //addon
-    testaddon, crafteraddon;
+    ;
 
     //Crystal edition list
     //crystalLab,crystalDrill,biotechnologyFacilities,polarbattery,energyInjector,nuclearLauncher,siliconcompounder,protectConveyor,sanctuaryProjector
@@ -596,7 +594,7 @@ public class Blocks implements ContentList{
         }};
 
         cryofluidMixer = new LiquidConverter("cryofluidmixer"){{
-            requirements(Category.crafting, ItemStack.with(Items.lead, 65, Items.silicon, 40, Items.titanium, 60));
+            requirements(Category.liquid, ItemStack.with(Items.lead, 65, Items.silicon, 40, Items.titanium, 60));
             outputLiquid = new LiquidStack(Liquids.cryofluid, 0.2f);
             craftTime = 120f;
             size = 2;
@@ -658,7 +656,7 @@ public class Blocks implements ContentList{
         }};
 
         melter = new GenericCrafter("melter"){{
-            requirements(Category.crafting, ItemStack.with(Items.copper, 30, Items.lead, 35, Items.graphite, 45));
+            requirements(Category.liquid, ItemStack.with(Items.copper, 30, Items.lead, 35, Items.graphite, 45));
             health = 200;
             outputLiquid = new LiquidStack(Liquids.slag, 2f);
             craftTime = 10f;
@@ -1376,25 +1374,6 @@ public class Blocks implements ContentList{
                 Draw.reset();
             };
         }};
-        //endregion
-        //region addon
-        testaddon = new AddonBase("addon"){{
-            requirements(Category.addon, BuildVisibility.debugOnly, ItemStack.with(Items.scrap, 500, Items.silicon, 100));
-            size = 1;
-            itemCapacity = 1000;
-        }};
-
-        crafteraddon = new CrafterAddon("test"){{
-            requirements(Category.addon, BuildVisibility.debugOnly, ItemStack.with(Items.copper, 60, Items.graphite, 30, Items.lead, 30));
-            craftEffect = Fx.smeltsmoke;
-            outputItem = new ItemStack(Items.metaglass, 1);
-            craftTime = 30f;
-            size = 1;
-            hasPower = hasItems = true;
-
-            consumes.items(new ItemStack(Items.lead, 1), new ItemStack(Items.sand, 1));
-            consumes.power(0.60f);
-        }};
 
 
         //endregion
@@ -1742,6 +1721,7 @@ public class Blocks implements ContentList{
         cyclone = new ItemTurret("cyclone"){{
             requirements(Category.turret, ItemStack.with(Items.copper, 200, Items.titanium, 125, Items.plastanium, 80));
             ammo(
+            Items.metaglass, Bullets.flakGlass,
             Items.blastCompound, Bullets.flakExplosive,
             Items.plastanium, Bullets.flakPlastic,
             Items.surgealloy, Bullets.flakSurge
