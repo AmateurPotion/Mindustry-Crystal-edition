@@ -21,6 +21,11 @@ _Crystal edition Github_
 
 `_Translating is similar to the original._`
 
+### Or...
+If you want to experience the latest version, please follow the instructions below.
+
+※ All builds must be done with commands within the master folder.
+
 #### Windows
 
 _Running:_ `gradlew desktop:run`  
