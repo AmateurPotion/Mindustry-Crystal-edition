@@ -21,8 +21,8 @@ public enum Category{
     upgrade,
     /** Things for storage or passive effects. */
     effect,
-    /** addon category **/
-    addon,
+    /** invisible category **/
+    invisible,
     /** core category **/
     core;
 

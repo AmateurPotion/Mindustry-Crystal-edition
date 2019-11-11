@@ -109,8 +109,8 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public void draw(Tile tile){
-//wall
-        if(variants == 0){
+   //TODO cover wall
+        /*if(variants == 0){
             Draw.rect(region, tile.drawx(), tile.drawy());
         }else{
             Draw.rect(variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, variantRegions.length - 1))], tile.drawx(), tile.drawy());
@@ -129,6 +129,8 @@ public class deflectorConveyor extends Block implements Autotiler{
         Draw.reset();
 
         entity1.hit = Mathf.clamp(entity1.hit - Time.delta() / hitTime);
+
+         */
 
         //conveyor
 

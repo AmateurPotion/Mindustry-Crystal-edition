@@ -81,7 +81,7 @@ public class Blocks implements ContentList{
     //upgrades
     dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad
 
-    //addon
+    //invisible
     ;
 
     //Crystal edition list
