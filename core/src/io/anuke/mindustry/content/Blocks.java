@@ -38,7 +38,7 @@ public class Blocks implements ContentList{
     iceSnow, sandWater, darksandWater, duneRocks, sandRocks, moss, sporeMoss, shale, shaleRocks, shaleBoulder, sandBoulder, grass, salt,
     metalFloor, metalFloorDamaged, metalFloor2, metalFloor3, metalFloor5, ignarock, magmarock, hotrock, snowrocks, rock, snowrock, saltRocks,
     darkPanel1, darkPanel2, darkPanel3, darkPanel4, darkPanel5, darkPanel6, darkMetal,
-    pebbles, tendrils,
+    pebbles, tendrils, meteorStone,
 
     //ores
     oreCopper, oreLead, oreScrap, oreCoal, oreTitanium, oreThorium, orePolarstone,
@@ -302,6 +302,11 @@ public class Blocks implements ContentList{
         }};
 
         rock = new Rock("rock"){{
+            variants = 2;
+        }};
+
+        meteorStone = new Rock("meteor"){{
+            requirements(Category.effect, BuildVisibility.sandboxOnly, ItemStack.with(Items.meteorShard, 100, Items.scrap, 500));
             variants = 2;
         }};
 
