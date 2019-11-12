@@ -59,14 +59,14 @@ public class Blocks implements ContentList{
     conveyor, titaniumConveyor, armoredConveyor, protectConveyor, distributor, junction, itemBridge, phaseConveyor, sorter, invertedSorter, router, overflowGate, massDriver,
 
     //liquids
-    mechanicalPump, waterExtractor, rotaryPump, thermalPump, oilExtractor, conduit, pulseConduit, liquidRouter, liquidTank, liquidJunction, bridgeConduit, phaseConduit, biotechnologyFacilities,
+    mechanicalPump, rotaryPump, thermalPump, conduit, pulseConduit, liquidRouter, liquidTank, liquidJunction, bridgeConduit, phaseConduit, biotechnologyFacilities,
 
     //power
     combustionGenerator, thermalGenerator, turbineGenerator, differentialGenerator, rtgGenerator, solarPanel, largeSolarPanel, thoriumReactor,
-    impactReactor, battery, batteryLarge, powerNode, powerNodeLarge, surgeTower, polarbattery, energyInjector,
+    impactReactor, battery, batteryLarge, powerNode, powerNodeLarge, surgeTower, polarbattery, energyInjector, diode,
 
     //production
-    mechanicalDrill, pneumaticDrill, laserDrill, blastDrill, crystalDrill, cultivator,
+    mechanicalDrill, pneumaticDrill, laserDrill, blastDrill, waterExtractor, oilExtractor, crystalDrill, cultivator,
 
     //storage
     coreShard, coreFoundation, coreNucleus, vault, container, unloader, launchPad, launchPadLarge,
@@ -607,7 +607,7 @@ public class Blocks implements ContentList{
         }};
 
         cryofluidMixer = new LiquidConverter("cryofluidmixer"){{
-            requirements(Category.liquid, ItemStack.with(Items.lead, 65, Items.silicon, 40, Items.titanium, 60));
+            requirements(Category.crafting, ItemStack.with(Items.lead, 65, Items.silicon, 40, Items.titanium, 60));
             outputLiquid = new LiquidStack(Liquids.cryofluid, 0.2f);
             craftTime = 120f;
             size = 2;
@@ -669,7 +669,7 @@ public class Blocks implements ContentList{
         }};
 
         melter = new GenericCrafter("melter"){{
-            requirements(Category.liquid, ItemStack.with(Items.copper, 30, Items.lead, 35, Items.graphite, 45));
+            requirements(Category.crafting, ItemStack.with(Items.copper, 30, Items.lead, 35, Items.graphite, 45));
             health = 200;
             outputLiquid = new LiquidStack(Liquids.slag, 2f);
             craftTime = 10f;
@@ -1150,6 +1150,10 @@ public class Blocks implements ContentList{
             laserRange = 30f;
         }};
 
+        diode = new PowerDiode("diode"){{
+            requirements(Category.power, ItemStack.with(Items.silicon, 10, Items.plastanium, 5, Items.metaglass, 10));
+        }};
+
         battery = new Battery("battery"){{
             requirements(Category.power, ItemStack.with(Items.copper, 4, Items.lead, 20));
             consumes.powerBuffered(4000f);
@@ -1307,7 +1311,7 @@ public class Blocks implements ContentList{
         }};
 
         waterExtractor = new SolidPump("water-extractor"){{
-            requirements(Category.liquid, ItemStack.with(Items.copper, 25, Items.graphite, 25, Items.lead, 20));
+            requirements(Category.production, ItemStack.with(Items.copper, 25, Items.graphite, 25, Items.lead, 20));
             result = Liquids.water;
             pumpAmount = 0.13f;
             size = 2;
@@ -1332,7 +1336,7 @@ public class Blocks implements ContentList{
         }};
 
         oilExtractor = new Fracker("oil-extractor"){{
-            requirements(Category.liquid, ItemStack.with(Items.copper, 150, Items.graphite, 175, Items.lead, 115, Items.thorium, 115, Items.silicon, 75));
+            requirements(Category.production, ItemStack.with(Items.copper, 150, Items.graphite, 175, Items.lead, 115, Items.thorium, 115, Items.silicon, 75));
             result = Liquids.oil;
             updateEffect = Fx.pulverize;
             liquidCapacity = 50f;
@@ -1596,7 +1600,7 @@ public class Blocks implements ContentList{
         arc = new PowerTurret("arc"){{
             requirements(Category.turret, ItemStack.with(Items.copper, 35, Items.lead, 35, Items.silicon, 10, Items.metaglass, 5));
             shootType = Bullets.arc;
-            reload = 24f;
+            reload = 35f;
             shootCone = 40f;
             rotatespeed = 8f;
             powerUse = 1.5f;
