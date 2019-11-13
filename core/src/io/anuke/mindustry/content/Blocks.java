@@ -79,7 +79,7 @@ public class Blocks implements ContentList{
     fortressFactory, chaosArrayFactory, eradicatorFactory, repairPoint,
 
     //upgrades
-    dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad
+    dartPad, deltaPad, tauPad, omegaPad, javelinPad, tridentPad, glaivePad, stealthPad
 
     //invisible
     ;
@@ -2071,6 +2071,13 @@ public class Blocks implements ContentList{
             mech = Mechs.glaive;
             size = 3;
             consumes.power(1.2f);
+        }};
+
+        stealthPad = new MechPad("stealth-ship-pad"){{
+            requirements(Category.upgrade, ItemStack.with(Items.lead, 300, Items.graphite, 300, Items.polarstone, 50));
+            mech = Mechs.stealth;
+            size = 3;
+            consumes.power(1f);
         }};
 /*
         phoenixPad = new MechPad("Phoenix-ship-pad"){{

@@ -77,12 +77,12 @@ public class Items implements ContentList{
             cost = 0.8f;
         }};
 
-        prisium = new Item("prisium", Color.valueOf("53565c")){{
+        prisium = new Item("prisium", Color.valueOf("f5f6ce")){{
             type = ItemType.material;
             cost = 1f;
         }};
 
-        meteorShard = new Item("meteor-shard", Color.valueOf("53565c")){{
+        meteorShard = new Item("meteor-shard", Color.valueOf("facc2e")){{
             type = ItemType.material;
             flammability = 1f;
             explosiveness = 1f;

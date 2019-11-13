@@ -16,7 +16,7 @@ import io.anuke.mindustry.graphics.*;
 import io.anuke.mindustry.type.*;
 
 public class Mechs implements ContentList{
-    public static Mech alpha, delta, tau, omega, dart, javelin, trident, glaive;
+    public static Mech alpha, delta, tau, omega, dart, javelin, trident, glaive, stealth;
 
     public static Mech starter;
 
@@ -418,6 +418,67 @@ public class Mechs implements ContentList{
                     bullet = Bullets.standardGlaive;
                     shootSound = Sounds.shootSnap;
                 }};
+            }
+        };
+
+        stealth = new Mech("stealth-ship", true){
+            protected TextureRegion armorRegion;
+
+            {
+                drillPower = -1;
+                itemCapacity = 1;
+                speed = 3f;
+                mass = 1f;
+                shake = 4f;
+                weaponOffsetX = 1;
+                weaponOffsetY = 0;
+                engineColor = Color.valueOf("ffffff");
+                health = 100f;
+                buildPower = 0.1f;
+                weapon = new Weapon("flamethrower"){{
+                    shootSound = Sounds.flame;
+                    length = 1f;
+                    reload = 14f;
+                    alternate = true;
+                    recoil = 1f;
+                    ejectEffect = Fx.none;
+                    bullet = Bullets.basicFlame;
+                }};
+            }
+
+            @Override
+            public float getRotationAlpha(Player player){
+                return 0.6f - player.shootHeat * 0.3f;
+            }
+
+            @Override
+            public float spreadX(Player player){
+                return player.shootHeat * 2f;
+            }
+
+            @Override
+            public void load(){
+                super.load();
+                armorRegion = Core.atlas.find(name + "-real");
+            }
+
+            @Override
+            public void updateAlt(Player player){
+                float scl = 1f - player.shootHeat / 2f;
+                player.velocity().scl(scl);
+            }
+
+            @Override
+            public void draw(Player player){
+                if(player.shootHeat <= 0.01f) return;
+
+                Shaders.build.progress = player.shootHeat;
+                Shaders.build.region = armorRegion;
+                Shaders.build.time = Time.time() / 10f;
+                Shaders.build.color.set(Pal.accent).a = player.shootHeat;
+
+                Draw.rect(armorRegion, player.x, player.y, player.rotation);
+                Draw.shader();
             }
         };
 /*
