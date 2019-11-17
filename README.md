@@ -6,7 +6,7 @@ _Crystal edition Github_
 
 1. Move to release page
 2. Download the file for your platform.
-3. Just run the file.(java needed.)
+3. Just run the file.(java needed. Most of the conditions are the same as the original version.)
 
 ### Information
 
