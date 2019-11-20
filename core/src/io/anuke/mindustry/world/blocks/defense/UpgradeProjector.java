@@ -7,24 +7,19 @@ import java.io.IOException;
 import io.anuke.arc.Core;
 import io.anuke.arc.collection.IntSet;
 import io.anuke.arc.graphics.Color;
-import io.anuke.arc.graphics.g2d.Draw;
-import io.anuke.arc.graphics.g2d.Lines;
-import io.anuke.arc.graphics.g2d.TextureRegion;
+import io.anuke.arc.graphics.g2d.*;
 import io.anuke.arc.math.Mathf;
-import io.anuke.arc.util.Time;
-import io.anuke.arc.util.Tmp;
+import io.anuke.arc.util.*;
 import io.anuke.mindustry.content.Fx;
 import io.anuke.mindustry.entities.Effects;
 import io.anuke.mindustry.entities.type.TileEntity;
-import io.anuke.mindustry.graphics.Drawf;
-import io.anuke.mindustry.graphics.Pal;
-import io.anuke.mindustry.world.Block;
-import io.anuke.mindustry.world.Tile;
-import io.anuke.mindustry.world.meta.BlockStat;
-import io.anuke.mindustry.world.meta.StatUnit;
+import io.anuke.mindustry.graphics.*;
+import io.anuke.mindustry.world.*;
+import io.anuke.mindustry.world.meta.*;
 
-import static io.anuke.mindustry.Vars.tilesize;
-import static io.anuke.mindustry.Vars.world;
+import java.io.*;
+
+import static io.anuke.mindustry.Vars.*;
 
 public class UpgradeProjector extends Block{
     private static Color color = Color.valueOf("F781F3");
@@ -50,6 +45,7 @@ public class UpgradeProjector extends Block{
         hasPower = true;
         hasItems = true;
         canOverdrive = false;
+        entityType = UpgradeEntity::new;
     }
 
     @Override
@@ -77,6 +73,11 @@ public class UpgradeProjector extends Block{
     }
 
     @Override
+    public void drawLight(Tile tile){
+        renderer.lights.add(tile.drawx(), tile.drawy(), 50f * tile.entity.efficiency(), color, 0.7f * tile.entity.efficiency());
+    }
+
+    @Override
     public void update(Tile tile){
         UpgradeEntity entity = tile.entity();
         entity.heat = Mathf.lerpDelta(entity.heat, entity.cons.valid() || tile.isEnemyCheat() ? 1f : 0f, 0.08f);
@@ -84,13 +85,13 @@ public class UpgradeProjector extends Block{
 
         entity.phaseHeat = Mathf.lerpDelta(entity.phaseHeat, Mathf.num(entity.cons.optionalValid()), 0.1f);
 
-        if(entity.cons.optionalValid() && entity.timer.get(timerUse, useTime) && entity.power.satisfaction > 0){
+        if(entity.cons.optionalValid() && entity.timer.get(timerUse, useTime) && entity.efficiency() > 0){
             entity.cons.trigger();
         }
 
         if(entity.charge >= reload){
             float realRange = range + entity.phaseHeat * phaseRangeBoost;
-            float realBoost = (speedBoost + entity.phaseHeat * speedBoostPhase) * entity.power.satisfaction;
+            float realBoost = (speedBoost + entity.phaseHeat * speedBoostPhase) * entity.efficiency();
 
             entity.charge = 0f;
 
@@ -111,7 +112,7 @@ public class UpgradeProjector extends Block{
                             other.entity.timeScale = Math.max(other.entity.timeScale, realBoost);
                         }
                         if(other.entity.health < other.entity.maxHealth()) {
-                            other.entity.healBy(other.entity.maxHealth() * (healPercent + entity.phaseHeat * phaseBoost) / 100f * entity.power.satisfaction);
+                            other.entity.healBy(other.entity.maxHealth() * (healPercent + entity.phaseHeat * phaseBoost) / 100f * entity.efficiency());
                             Effects.effect(Fx.healBlockFull, Tmp.c1.set(color).lerp(phase, entity.phaseHeat), other.drawx(), other.drawy(), other.block().size);
                         }
                         healed.add(other.pos());
@@ -154,14 +155,9 @@ public class UpgradeProjector extends Block{
         Draw.reset();
     }
 
-    @Override
-    public TileEntity newEntity(){
-        return new UpgradeEntity();
-    }
-
     class UpgradeEntity extends TileEntity{
         float heat;
-        float charge;
+        float charge = Mathf.random(reload);
         float phaseHeat;
 
         @Override

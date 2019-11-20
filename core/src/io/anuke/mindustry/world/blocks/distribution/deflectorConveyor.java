@@ -30,7 +30,10 @@ import io.anuke.mindustry.world.meta.BlockGroup;
 import static io.anuke.mindustry.Vars.content;
 import static io.anuke.mindustry.Vars.itemSize;
 import static io.anuke.mindustry.Vars.tilesize;
+
 import java.io.*;
+
+import static io.anuke.mindustry.Vars.*;
 
 public class deflectorConveyor extends Block implements Autotiler{
     protected int variants = 0;
@@ -67,6 +70,7 @@ public class deflectorConveyor extends Block implements Autotiler{
         hasItems = true;
         itemCapacity = 4;
         conveyorPlacement = true;
+        entityType = deflectorConveyorEntity::new;
 
         idleSound = Sounds.conveyor;
         idleSoundVolume = 0.004f;
@@ -244,7 +248,7 @@ public class deflectorConveyor extends Block implements Autotiler{
         Tile next = tile.getNearby(tile.rotation());
         if(next != null) next = next.link();
 
-        float nextMax = next != null && next.block() instanceof deflectorConveyor ? 1f - Math.max(itemSpace - next.<deflectorConveyorEntity>entity().minitem, 0) : 1f;
+        float nextMax = next != null && next.block() instanceof deflectorConveyor && next.block().acceptItem(null, next, tile) ? 1f - Math.max(itemSpace - next.<deflectorConveyorEntity>entity().minitem, 0) : 1f;
         int minremove = Integer.MAX_VALUE;
 
         for(int i = entity.convey.size - 1; i >= 0; i--){
@@ -262,7 +266,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
             if(maxmove > minmove){
                 pos.y += maxmove;
-                if(Mathf.isEqual(pos.x, 0, 0.1f)){
+                if(Mathf.equal(pos.x, 0, 0.1f)){
                     pos.x = 0f;
                 }
                 pos.x = Mathf.lerpDelta(pos.x, 0, 0.1f);
@@ -404,14 +408,7 @@ public class deflectorConveyor extends Block implements Autotiler{
         entity.lastInserted = (byte)(entity.convey.size - 1);
     }
 
-    @Override
-    public TileEntity newEntity(){
-        return new deflectorConveyorEntity();
-
-    }
-
     public static class deflectorConveyorEntity extends TileEntity{
-
         public float hit;
 
         LongArray convey = new LongArray();

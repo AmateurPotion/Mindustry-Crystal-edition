@@ -19,6 +19,8 @@ import io.anuke.mindustry.world.blocks.*;
 import io.anuke.mindustry.world.blocks.defense.*;
 import io.anuke.mindustry.world.blocks.defense.turrets.*;
 import io.anuke.mindustry.world.blocks.distribution.*;
+import io.anuke.mindustry.world.blocks.liquid.Conduit;
+import io.anuke.mindustry.world.blocks.liquid.LiquidTank;
 import io.anuke.mindustry.world.blocks.logic.*;
 import io.anuke.mindustry.world.blocks.power.*;
 import io.anuke.mindustry.world.blocks.production.*;
@@ -48,18 +50,18 @@ public class Blocks implements ContentList{
     melter, separator, sporePress, pulverizer, incinerator, coalCentrifuge, crystalLab, siliconCompounder, phaseShifter, dimensionRepeater,
 
     //sandbox
-    powerVoid, powerSource, itemSource, liquidSource, itemVoid, message,
+    powerSource, powerVoid, itemSource, itemVoid, liquidSource, message, illuminator,
 
     //defense
-    scrapWall, scrapWallLarge, scrapWallHuge, scrapWallGigantic, thruster, //ok, these names are getting ridiculous, but at least I don't have humongous walls yet
     copperWall, copperWallLarge, titaniumWall, titaniumWallLarge, plastaniumWall, plastaniumWallLarge, thoriumWall, thoriumWallLarge, door, doorLarge,
     phaseWall, phaseWallLarge, surgeWall, surgeWallLarge, sanctuaryProjector, mender, mendProjector, overdriveProjector, forceProjector, shockMine,
+    scrapWall, scrapWallLarge, scrapWallHuge, scrapWallGigantic, thruster, //ok, these names are getting ridiculous, but at least I don't have humongous walls yet
 
     //transport
     conveyor, titaniumConveyor, armoredConveyor, protectConveyor, distributor, junction, itemBridge, phaseConveyor, sorter, invertedSorter, router, overflowGate, massDriver,
 
     //liquids
-    mechanicalPump, rotaryPump, thermalPump, conduit, pulseConduit, liquidRouter, liquidTank, liquidJunction, bridgeConduit, phaseConduit, biotechnologyFacilities,
+    mechanicalPump, rotaryPump, thermalPump, conduit, pulseConduit, platedConduit, liquidRouter, liquidTank, liquidJunction, bridgeConduit, phaseConduit, biotechnologyFacilities,
 
     //power
     combustionGenerator, thermalGenerator, turbineGenerator, differentialGenerator, rtgGenerator, solarPanel, largeSolarPanel, thoriumReactor,
@@ -791,67 +793,9 @@ public class Blocks implements ContentList{
         }};
 
         //endregion
-        //region sandbox
-
-        powerVoid = new PowerVoid("power-void"){{
-            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.with());
-            alwaysUnlocked = true;
-        }};
-        powerSource = new PowerSource("power-source"){{
-            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.with());
-            alwaysUnlocked = true;
-        }};
-        itemSource = new ItemSource("item-source"){{
-            requirements(Category.distribution, BuildVisibility.sandboxOnly, ItemStack.with());
-            alwaysUnlocked = true;
-        }};
-        itemVoid = new ItemVoid("item-void"){{
-            requirements(Category.distribution, BuildVisibility.sandboxOnly, ItemStack.with());
-            alwaysUnlocked = true;
-        }};
-        liquidSource = new LiquidSource("liquid-source"){{
-            requirements(Category.liquid, BuildVisibility.sandboxOnly, ItemStack.with());
-            alwaysUnlocked = true;
-        }};
-        message = new MessageBlock("message"){{
-            requirements(Category.effect, ItemStack.with(Items.graphite, 5));
-        }};
-
-        //endregion
         //region defense
 
         int wallHealthMultiplier = 4;
-
-        scrapWall = new Wall("scrap-wall"){{
-            requirements(Category.defense, ItemStack.with(Items.scrap, 5));
-            health = 60 * wallHealthMultiplier;
-            variants = 5;
-        }};
-
-        scrapWallLarge = new Wall("scrap-wall-large"){{
-            requirements(Category.defense, ItemStack.with(Items.scrap, 50));
-            health = 60 * 4 * wallHealthMultiplier;
-            size = 2;
-            variants = 4;
-        }};
-
-        scrapWallHuge = new Wall("scrap-wall-huge"){{
-            requirements(Category.defense, ItemStack.with(Items.scrap, 100));
-            health = 60 * 9 * wallHealthMultiplier;
-            size = 3;
-            variants = 3;
-        }};
-
-        scrapWallGigantic = new Wall("scrap-wall-gigantic"){{
-            requirements(Category.defense, ItemStack.with(Items.scrap, 250));
-            health = 60 * 16 * wallHealthMultiplier;
-            size = 4;
-        }};
-
-        thruster = new Wall("thruster"){{
-            health = 55 * 16 * wallHealthMultiplier;
-            size = 4;
-        }};
 
         copperWall = new Wall("copper-wall"){{
             requirements(Category.defense, ItemStack.with(Items.copper, 6));
@@ -934,6 +878,37 @@ public class Blocks implements ContentList{
             size = 2;
         }};
 
+        scrapWall = new Wall("scrap-wall"){{
+            requirements(Category.defense, ItemStack.with(Items.scrap, 5));
+            health = 60 * wallHealthMultiplier;
+            variants = 5;
+        }};
+
+        scrapWallLarge = new Wall("scrap-wall-large"){{
+            requirements(Category.defense, ItemStack.mult(scrapWall.requirements, 4));
+            health = 60 * 4 * wallHealthMultiplier;
+            size = 2;
+            variants = 4;
+        }};
+
+        scrapWallHuge = new Wall("scrap-wall-huge"){{
+            requirements(Category.defense, ItemStack.mult(scrapWall.requirements, 9));
+            health = 60 * 9 * wallHealthMultiplier;
+            size = 3;
+            variants = 3;
+        }};
+
+        scrapWallGigantic = new Wall("scrap-wall-gigantic"){{
+            requirements(Category.defense, ItemStack.mult(scrapWall.requirements, 16));
+            health = 60 * 16 * wallHealthMultiplier;
+            size = 4;
+        }};
+
+        thruster = new Wall("thruster"){{
+            health = 55 * 16 * wallHealthMultiplier;
+            size = 4;
+        }};
+
         mender = new MendProjector("mender"){{
             requirements(Category.effect, ItemStack.with(Items.lead, 30, Items.copper, 25));
             consumes.power(0.3f);
@@ -1011,7 +986,7 @@ public class Blocks implements ContentList{
         }};
 
         armoredConveyor = new ArmoredConveyor("armored-conveyor"){{
-            requirements(Category.distribution, ItemStack.with(Items.metaglass, 1, Items.thorium, 1));
+            requirements(Category.distribution, ItemStack.with(Items.plastanium, 1, Items.thorium, 1, Items.metaglass, 1));
             health = 180;
             speed = 0.08f;
         }};
@@ -1101,7 +1076,7 @@ public class Blocks implements ContentList{
             size = 3;
         }};
 
-        conduit = new Conduit("conduit"){{
+        conduit = new io.anuke.mindustry.world.blocks.liquid.Conduit("conduit"){{
             requirements(Category.liquid, ItemStack.with(Items.metaglass, 1));
             health = 45;
         }};
@@ -1109,10 +1084,18 @@ public class Blocks implements ContentList{
         pulseConduit = new Conduit("pulse-conduit"){{
             requirements(Category.liquid, ItemStack.with(Items.titanium, 2, Items.metaglass, 1));
             liquidCapacity = 16f;
+            liquidPressure = 1.025f;
             health = 90;
         }};
 
-        liquidRouter = new LiquidRouter("liquid-router"){{
+        platedConduit = new io.anuke.mindustry.world.blocks.liquid.ArmoredConduit("plated-conduit"){{
+            requirements(Category.liquid, ItemStack.with(Items.thorium, 2, Items.metaglass, 1));
+            liquidCapacity = 16f;
+            liquidPressure = 1.025f;
+            health = 220;
+        }};
+
+        liquidRouter = new io.anuke.mindustry.world.blocks.liquid.LiquidRouter("liquid-router"){{
             requirements(Category.liquid, ItemStack.with(Items.graphite, 4, Items.metaglass, 2));
             liquidCapacity = 20f;
         }};
@@ -1124,17 +1107,17 @@ public class Blocks implements ContentList{
             health = 500;
         }};
 
-        liquidJunction = new LiquidJunction("liquid-junction"){{
+        liquidJunction = new io.anuke.mindustry.world.blocks.liquid.LiquidJunction("liquid-junction"){{
             requirements(Category.liquid, ItemStack.with(Items.graphite, 2, Items.metaglass, 2));
         }};
 
-        bridgeConduit = new LiquidExtendingBridge("bridge-conduit"){{
+        bridgeConduit = new io.anuke.mindustry.world.blocks.liquid.LiquidExtendingBridge("bridge-conduit"){{
             requirements(Category.liquid, ItemStack.with(Items.graphite, 4, Items.metaglass, 8));
             range = 4;
             hasPower = false;
         }};
 
-        phaseConduit = new LiquidBridge("phase-conduit"){{
+        phaseConduit = new io.anuke.mindustry.world.blocks.liquid.LiquidBridge("phase-conduit"){{
             requirements(Category.liquid, ItemStack.with(Items.phasefabric, 5, Items.silicon, 7, Items.metaglass, 20, Items.titanium, 10));
             range = 12;
             hasPower = true;
@@ -1245,7 +1228,7 @@ public class Blocks implements ContentList{
             powerProduction = 14f;
             consumes.item(Items.thorium);
             heating = 0.02f;
-            consumes.liquid(Liquids.cryofluid, 0.1f).update(false);
+            consumes.liquid(Liquids.cryofluid, heating / coolantPower).update(false);
         }};
 
         impactReactor = new ImpactReactor("impact-reactor"){{
@@ -1724,7 +1707,7 @@ public class Blocks implements ContentList{
         }};
 
         ripple = new ArtilleryTurret("ripple"){{
-            requirements(Category.turret, ItemStack.with(Items.copper, 150, Items.graphite, 135, Items.titanium, 60, Items.thorium, 60));
+            requirements(Category.turret, ItemStack.with(Items.copper, 150, Items.graphite, 135, Items.titanium, 60));
             ammo(
             Items.graphite, Bullets.artilleryDense,
             Items.silicon, Bullets.artilleryHoming,
@@ -1735,7 +1718,7 @@ public class Blocks implements ContentList{
             size = 3;
             shots = 4;
             inaccuracy = 12f;
-            reload = 100f;
+            reload = 60f;
             ammoEjectBack = 5f;
             ammoUseEffect = Fx.shellEjectBig;
             cooldown = 0.03f;
@@ -1743,7 +1726,7 @@ public class Blocks implements ContentList{
             restitution = 0.02f;
             recoil = 6f;
             shootShake = 2f;
-            range = 400f;
+            range = 290f;
 
             health = 130 * size * size;
             shootSound = Sounds.artillery;
@@ -2094,6 +2077,46 @@ public class Blocks implements ContentList{
             consumes.power(3f);
         }};
 */
+
+        //endregion
+        //region sandbox
+
+        powerSource = new PowerSource("power-source"){{
+            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.with());
+            alwaysUnlocked = true;
+        }};
+
+        powerVoid = new PowerVoid("power-void"){{
+            requirements(Category.power, BuildVisibility.sandboxOnly, ItemStack.with());
+            alwaysUnlocked = true;
+        }};
+
+        itemSource = new ItemSource("item-source"){{
+            requirements(Category.distribution, BuildVisibility.sandboxOnly, ItemStack.with());
+            alwaysUnlocked = true;
+        }};
+
+        itemVoid = new ItemVoid("item-void"){{
+            requirements(Category.distribution, BuildVisibility.sandboxOnly, ItemStack.with());
+            alwaysUnlocked = true;
+        }};
+
+        liquidSource = new LiquidSource("liquid-source"){{
+            requirements(Category.liquid, BuildVisibility.sandboxOnly, ItemStack.with());
+            alwaysUnlocked = true;
+        }};
+
+        message = new MessageBlock("message"){{
+            requirements(Category.effect, ItemStack.with(Items.graphite, 5));
+        }};
+
+        illuminator = new LightBlock("illuminator"){{
+            requirements(Category.effect, BuildVisibility.lightingOnly, ItemStack.with(Items.graphite, 4, Items.silicon, 2));
+            brightness = 0.67f;
+            radius = 120f;
+            consumes.power(0.05f);
+        }};
+
         //endregion
     }
 }

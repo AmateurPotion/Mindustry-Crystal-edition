@@ -17,6 +17,7 @@ import io.anuke.mindustry.entities.Damage;
 import io.anuke.mindustry.entities.Effects;
 import io.anuke.mindustry.entities.type.TileEntity;
 import io.anuke.mindustry.world.Tile;
+import io.anuke.mindustry.world.blocks.defense.UpgradeProjector;
 import io.anuke.mindustry.world.blocks.power.ImpactReactor;
 import io.anuke.mindustry.world.blocks.power.PowerGenerator;
 
@@ -45,6 +46,7 @@ public class CrystalLab extends GenericCrafter{
         liquidCapacity = 30f;
         hasItems = true;
         outputsPower = consumesPower = true;
+        entityType = CrystalLabEntity::new;
 
         bottomRegion = reg("-bottom");
         plasmaRegions = new int[plasmas];
@@ -79,11 +81,6 @@ public class CrystalLab extends GenericCrafter{
         Draw.rect(region, tile.drawx(), tile.drawy());
 
         Draw.color();
-    }
-
-    @Override
-    public TileEntity newEntity(){
-        return new CrystalLabEntity();
     }
 
     @Override
