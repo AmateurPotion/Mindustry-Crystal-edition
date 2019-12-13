@@ -17,7 +17,7 @@ buildscript{
 
 allprojects{
     version = 'release'
-    apply plugin: 'maven-publish'
+    apply plugin: 'maven'
     group = 'com.github.Anuken'
 
     ext{
@@ -257,6 +257,7 @@ project(":core"){
         compile arcModule("arc-core")
         compile arcModule("extensions:freetype")
         compile arcModule("extensions:arcnet")
+        compile "org.mozilla:rhino:1.7.11"
         if(localArc() && debugged()) compile arcModule("extensions:recorder")
 
         compileOnly project(":annotations")
@@ -298,6 +299,7 @@ project(":tools"){
 
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+        compile "org.reflections:reflections:0.9.11"
 
         compile arcModule("backends:backend-sdl")
     }

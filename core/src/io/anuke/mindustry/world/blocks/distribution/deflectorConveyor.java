@@ -1,10 +1,7 @@
 package io.anuke.mindustry.world.blocks.distribution;
 
-import io.anuke.arc.*;
 import io.anuke.arc.collection.*;
 import io.anuke.arc.func.*;
-import io.anuke.arc.graphics.g2d.*;
-import io.anuke.arc.math.*;
 import io.anuke.arc.math.geom.*;
 import io.anuke.arc.util.*;
 import io.anuke.mindustry.content.*;
@@ -33,10 +30,8 @@ import static io.anuke.mindustry.Vars.tilesize;
 
 import java.io.*;
 
-import static io.anuke.mindustry.Vars.*;
-
 public class deflectorConveyor extends Block implements Autotiler{
-    protected int variants = 0;
+    public int variants = 0;
 
     private static final float itemSpace = 0.4f;
     private static final float minmove = 1f / (Short.MAX_VALUE - 2);
@@ -47,21 +42,20 @@ public class deflectorConveyor extends Block implements Autotiler{
     private final Vector2 tr2 = new Vector2();
 
     //shield
-    public static final float hitTime = 10f;
 
-    protected float maxDamageDeflect = 10f;
-    protected Rectangle rect = new Rectangle();
-    protected Rectangle rect2 = new Rectangle();
+    public float maxDamageDeflect = 10f;
+    public Rectangle rect = new Rectangle();
+    public Rectangle rect2 = new Rectangle();
     //lightning
-    protected float lightningChance = 0.05f;
-    protected float lightningDamage = 15f;
-    protected int lightningLength = 17;
+    public float lightningChance = 0.05f;
+    public float lightningDamage = 15f;
+    public int lightningLength = 17;
 
     private TextureRegion[][] regions = new TextureRegion[7][4];
 
-    protected float speed = 0f;
+    public float speed = 0f;
 
-    protected deflectorConveyor(String name){
+    public deflectorConveyor(String name){
         super(name);
         rotate = true;
         update = true;
@@ -123,7 +117,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
         super.draw(tile);
 
-        deflectorConveyorEntity entity1 = tile.entity();
+        deflectorConveyorEntity entity1 = tile.ent();
 
         if(entity1.hit < 0.0001f) return;
 
@@ -140,7 +134,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
 
 
-        deflectorConveyorEntity entity2 = tile.entity();
+        deflectorConveyorEntity entity2 = tile.ent();
         byte rotation = tile.rotation();
 
         int frame = entity2.clogHeat <= 0.5f ? (int)(((Time.time() * speed * 8f * entity2.timeScale)) % 4) : 0;
@@ -150,7 +144,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public boolean shouldIdleSound(Tile tile){
-        deflectorConveyorEntity entity2 = tile.entity();
+        deflectorConveyorEntity entity2 = tile.ent();
         return entity2.clogHeat <= 0.5f ;
     }
 
@@ -158,7 +152,7 @@ public class deflectorConveyor extends Block implements Autotiler{
     public void onProximityUpdate(Tile tile){
         super.onProximityUpdate(tile);
 
-        deflectorConveyorEntity entity2 = tile.entity();
+        deflectorConveyorEntity entity2 = tile.ent();
         int[] bits = buildBlending(tile, tile.rotation(), null, true);
         entity2.blendbits = bits[0];
         entity2.blendsclx = bits[1];
@@ -187,7 +181,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public void drawLayer(Tile tile){
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
 
         byte rotation = tile.rotation();
 
@@ -213,7 +207,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public void unitOn(Tile tile, Unit unit){
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
 
         if(entity.clogHeat > 0.5f){
             return;
@@ -243,12 +237,12 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public void update(Tile tile){
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
         entity.minitem = 1f;
         Tile next = tile.getNearby(tile.rotation());
         if(next != null) next = next.link();
 
-        float nextMax = next != null && next.block() instanceof deflectorConveyor && next.block().acceptItem(null, next, tile) ? 1f - Math.max(itemSpace - next.<deflectorConveyorEntity>entity().minitem, 0) : 1f;
+        float nextMax = next != null && next.block() instanceof deflectorConveyor && next.block().acceptItem(null, next, tile) ? 1f - Math.max(itemSpace - next.<deflectorConveyorEntity>ent().minitem, 0) : 1f;
         int minremove = Integer.MAX_VALUE;
 
         for(int i = entity.convey.size - 1; i >= 0; i--){
@@ -276,7 +270,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
             if(pos.y >= 0.9999f && offloadDir(tile, pos.item)){
                 if(next != null && next.block() instanceof deflectorConveyor){
-                    deflectorConveyorEntity othere = next.entity();
+                    deflectorConveyorEntity othere = next.ent();
 
                     ItemPos ni = pos2.set(othere.convey.get(othere.lastInserted), ItemPos.updateShorts);
 
@@ -328,7 +322,7 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public int removeStack(Tile tile, Item item, int amount){
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
         entity.noSleep();
         int removed = 0;
 
@@ -354,13 +348,13 @@ public class deflectorConveyor extends Block implements Autotiler{
 
     @Override
     public int acceptStack(Item item, int amount, Tile tile, Unit source){
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
         return Math.min((int)(entity.minitem / itemSpace), amount);
     }
 
     @Override
     public void handleStack(Item item, int amount, Tile tile, Unit source){
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
 
         for(int i = amount - 1; i >= 0; i--){
             long result = ItemPos.packItem(item, 0f, i * itemSpace);
@@ -374,7 +368,7 @@ public class deflectorConveyor extends Block implements Autotiler{
     @Override
     public boolean acceptItem(Item item, Tile tile, Tile source){
         int direction = source == null ? 0 : Math.abs(source.relativeTo(tile.x, tile.y) - tile.rotation());
-        float minitem = tile.<deflectorConveyorEntity>entity().minitem;
+        float minitem = tile.<deflectorConveyorEntity>ent().minitem;
         return (((direction == 0) && minitem > itemSpace) ||
         ((direction % 2 == 1) && minitem > 0.52f)) && (source == null || !(source.block().rotate && (source.rotation() + 2) % 4 == tile.rotation()));
     }
@@ -389,7 +383,7 @@ public class deflectorConveyor extends Block implements Autotiler{
         float pos = ch == 0 ? 0 : ch % 2 == 1 ? 0.5f : 1f;
         float y = (ang == -1 || ang == 3) ? 1 : (ang == 1 || ang == -3) ? -1 : 0;
 
-        deflectorConveyorEntity entity = tile.entity();
+        deflectorConveyorEntity entity = tile.ent();
         entity.noSleep();
         long result = ItemPos.packItem(item, y * 0.9f, pos);
 

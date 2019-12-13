@@ -17,8 +17,6 @@ import io.anuke.mindustry.graphics.*;
 import io.anuke.mindustry.world.*;
 import io.anuke.mindustry.world.meta.*;
 
-import java.io.*;
-
 import static io.anuke.mindustry.Vars.*;
 
 public class UpgradeProjector extends Block{
@@ -26,17 +24,17 @@ public class UpgradeProjector extends Block{
     private static Color phase = Color.valueOf("58FAF4");
     private static IntSet healed = new IntSet();
 
-    protected int timerUse = timers++;
+    public int timerUse = timers++;
 
-    protected TextureRegion topRegion;
-    protected float reload = 250f;
-    protected float range = 60f;
-    protected float healPercent = 12f;
-    protected float speedBoost = 1.5f;
-    protected float speedBoostPhase = 0.75f;
-    protected float phaseBoost = 12f;
-    protected float phaseRangeBoost = 50f;
-    protected float useTime = 400f;
+    public TextureRegion topRegion;
+    public float reload = 250f;
+    public float range = 60f;
+    public float healPercent = 12f;
+    public float speedBoost = 1.5f;
+    public float speedBoostPhase = 0.75f;
+    public float phaseBoost = 12f;
+    public float phaseRangeBoost = 50f;
+    public float useTime = 400f;
 
     public UpgradeProjector(String name){
         super(name);
@@ -79,7 +77,7 @@ public class UpgradeProjector extends Block{
 
     @Override
     public void update(Tile tile){
-        UpgradeEntity entity = tile.entity();
+        UpgradeEntity entity = tile.ent();
         entity.heat = Mathf.lerpDelta(entity.heat, entity.cons.valid() || tile.isEnemyCheat() ? 1f : 0f, 0.08f);
         entity.charge += entity.heat * entity.delta();
 
@@ -129,7 +127,7 @@ public class UpgradeProjector extends Block{
 
     @Override
     public void drawSelect(Tile tile){
-        UpgradeEntity entity = tile.entity();
+        UpgradeEntity entity = tile.ent();
         float realRange = range + entity.phaseHeat * phaseRangeBoost;
 
         Drawf.dashCircle(tile.drawx(), tile.drawy(), realRange, color);
@@ -139,7 +137,7 @@ public class UpgradeProjector extends Block{
     public void draw(Tile tile){
         super.draw(tile);
 
-        UpgradeEntity entity = tile.entity();
+        UpgradeEntity entity = tile.ent();
         float f = 1f - (Time.time() / 100f) % 1f;
 
         Draw.color(color, phase, entity.phaseHeat);

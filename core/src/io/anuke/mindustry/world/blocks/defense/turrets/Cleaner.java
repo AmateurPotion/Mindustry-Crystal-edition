@@ -19,7 +19,7 @@ import static io.anuke.mindustry.Vars.tilesize;
 import static io.anuke.mindustry.Vars.world;
 
 public abstract class Cleaner extends Turret{
-    protected ObjectMap<Liquid, BulletType> ammo = new ObjectMap<>();
+    public ObjectMap<Liquid, BulletType> ammo = new ObjectMap<>();
 
     public Cleaner(String name){
         super(name);
@@ -52,13 +52,13 @@ public abstract class Cleaner extends Turret{
 
     @Override
     public boolean shouldActiveSound(Tile tile){
-        TurretEntity entity = tile.entity();
+        TurretEntity entity = tile.ent();
         return entity.target != null && hasAmmo(tile);
     }
 
     @Override
     protected boolean validateTarget(Tile tile){
-        TurretEntity entity = tile.entity();
+        TurretEntity entity = tile.ent();
         if(entity.liquids.current().canExtinguish() && entity.target instanceof Tile){
             return Fire.has(((Tile)entity.target).x, ((Tile)entity.target).y);
         }
@@ -67,7 +67,7 @@ public abstract class Cleaner extends Turret{
 
     @Override
     protected void findTarget(Tile tile){
-        TurretEntity entity = tile.entity();
+        TurretEntity entity = tile.ent();
         if(entity.liquids.current().canExtinguish()){
             int tr = (int)(range / tilesize);
             for(int x = -tr; x <= tr; x++){
@@ -87,7 +87,7 @@ public abstract class Cleaner extends Turret{
     protected void effects(Tile tile){
         BulletType type = peekAmmo(tile);
 
-        TurretEntity entity = tile.entity();
+        TurretEntity entity = tile.ent();
 
         Effects.effect(type.shootEffect, entity.liquids.current().color, tile.drawx() + tr.x, tile.drawy() + tr.y, entity.rotation);
         Effects.effect(type.smokeEffect, entity.liquids.current().color, tile.drawx() + tr.x, tile.drawy() + tr.y, entity.rotation);
@@ -102,7 +102,7 @@ public abstract class Cleaner extends Turret{
 
     @Override
     public BulletType useAmmo(Tile tile){
-        TurretEntity entity = tile.entity();
+        TurretEntity entity = tile.ent();
         if(tile.isEnemyCheat()) return ammo.get(entity.liquids.current());
         BulletType type = ammo.get(entity.liquids.current());
         entity.liquids.remove(entity.liquids.current(), type.ammoMultiplier);
@@ -116,7 +116,7 @@ public abstract class Cleaner extends Turret{
 
     @Override
     public boolean hasAmmo(Tile tile){
-        TurretEntity entity = tile.entity();
+        TurretEntity entity = tile.ent();
         return ammo.get(entity.liquids.current()) != null && entity.liquids.total() >= ammo.get(entity.liquids.current()).ammoMultiplier;
     }
 

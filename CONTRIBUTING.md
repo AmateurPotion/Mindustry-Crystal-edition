@@ -43,6 +43,13 @@ Instead of using `java.util.List`, `java.util.HashMap`, and other standard Java 
 Why? Because that's what the rest of the codebase uses, and the standard collections have a lot of cruft and usability issues associated with them.  
 In the rare case that concurrency is required, you may use the standard Java classes for that purpose (e.g. `CopyOnWriteArrayList`).
 
+What you'll usually need to change:
+- `HashSet` -> `ObjectSet`
+- `HashMap` -> `ObjectMap`
+- `List` / `ArrayList` / `Stack` -> `Array`
+- `java.util.Queue` -> `io.anuke.arc.collection.Queue`
+- *Many others*
+
 
 #### Avoid boxed types (Integer, Boolean)
 Never create variables or collections with boxed types `Array<Integer>` or `ObjectMap<Integer, ...>`. Use the collections specialized for this task, e.g. `IntArray` and `IntMap`.
@@ -59,4 +66,4 @@ If something needs to be encapsulated in the future, IntelliJ can handle it with
 
 
 #### Do not create methods unless necessary.
-Unless a block of code is very large or used in more than 1-2 places, don't split it up into a separate method. Making unnecessary methods only creates confusion, and may slightly decrease performance.  
+Unless a block of code is very large or used in more than 1-2 places, don't split it up into a separate method. Making unnecessary methods only creates confusion, and may slightly decrease performance.
