@@ -3,17 +3,19 @@ package io.anuke.mindustry.entities.units;
 import io.anuke.arc.math.Mathf;
 import io.anuke.mindustry.Vars;
 import io.anuke.mindustry.content.Items;
+import io.anuke.mindustry.content.UnitTypes;
 import io.anuke.mindustry.entities.type.BaseUnit;
 import io.anuke.mindustry.entities.type.TileEntity;
 import io.anuke.mindustry.gen.Call;
-import io.anuke.mindustry.type.Item;
+import io.anuke.mindustry.type.*;
 
 public class UnitDrops{
     private static Item[] dropTable;
 
     public static void dropItems(BaseUnit unit){
-        //items only dropped in waves for enemy team
-        if(unit.getTeam() != Vars.waveTeam || !Vars.state.rules.unitDrops){
+        //items only dropped in waves for enemy team   input.equals(str)
+        //UnitTypes.dagger
+        if(unit.getTeam() != Vars.waveTeam || !Vars.state.rules.unitDrops)){
             return;
         }
 
@@ -24,6 +26,9 @@ public class UnitDrops{
         }
 
         if(dropTable == null){
+            if(!Vars.unitGroups.equals(UnitTypes.dagger)){
+
+            };
             dropTable = new Item[]{Items.titanium, Items.silicon, Items.lead, Items.copper, Items.meteorShard};
         }
 

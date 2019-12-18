@@ -344,7 +344,7 @@ public class EventType{
             this.player = player;
         }
     }
-
+    
     public static class PlayerBanEvent{
         public final Player player;
 
@@ -352,7 +352,7 @@ public class EventType{
             this.player = player;
         }
     }
-
+    
     public static class PlayerUnbanEvent{
         public final Player player;
 
@@ -360,7 +360,7 @@ public class EventType{
             this.player = player;
         }
     }
-
+    
     public static class PlayerIpBanEvent{
         public final String ip;
 
@@ -369,7 +369,7 @@ public class EventType{
             this.ip = ip;
         }
     }
-
+    
     public static class PlayerIpUnbanEvent{
         public final String ip;
 
@@ -378,6 +378,6 @@ public class EventType{
             this.ip = ip;
         }
     }
-
+    
 }
 
